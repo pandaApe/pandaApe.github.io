@@ -248,6 +248,128 @@
             
               
                 
+                <a class="post-title-link" href="/2015/08/22/2-CostomMenu/" itemprop="url">
+                  自定义 选择内容后 的菜单
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2015-08-22T16:45:53+08:00" content="2015-08-22">
+              2015-08-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/08/22/2-CostomMenu/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/22/2-CostomMenu/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="微信长按菜单的联想"><a href="#微信长按菜单的联想" class="headerlink" title="微信长按菜单的联想"></a>微信长按菜单的联想</h3><p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1evbu9lnabjj20a00a9dge.jpg" alt=""></p>
+<p>阅读类应用必备的功能有木有。不单是可以加入分享功能，用浏览器搜索，颜色标记选中内容都可以做到撒。</p>
+<h3 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h3><p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1evbkys8npyj209109gjsh.jpg" alt=""></p>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">super</span>.viewDidload()</span><br><span class="line"></span><br><span class="line">	<span class="comment">//1.自定义选择后的菜单</span></span><br><span class="line">	<span class="keyword">var</span> itemMail = <span class="type">UIMenuItem</span>(title: <span class="string">"邮件分享"</span>, action: <span class="string">"mailShare:"</span>)</span><br><span class="line">	<span class="keyword">var</span> itemWeibo = <span class="type">UIMenuItem</span>(title: <span class="string">"微博分享"</span>, action: <span class="string">"weiboShare:"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//2.取menu实例</span></span><br><span class="line">	<span class="keyword">var</span> menu = <span class="type">UIMenuController</span>.sharedMenuController()</span><br><span class="line">	<span class="comment">//3.增加到menu中</span></span><br><span class="line">	menu.menuItems = [itemMail, itemWeibo]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//点击时的Action</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">weiboShare</span><span class="params">(sender:UIMenuItem)</span></span>&#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"weiboShare:"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mailShare</span><span class="params">(sender:UIMenuItem)</span></span>&#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"mailShare:"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/08/21/1-Great-StartForMe/" itemprop="url">
                   Great Start
                 </a>
@@ -388,7 +510,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
@@ -396,7 +518,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -405,7 +527,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">tags</span>
               
             </div>
