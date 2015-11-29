@@ -248,6 +248,135 @@
             
               
                 
+                <a class="post-title-link" href="/2015/11/30/4-LibraryNotLoadedCocoaPods/" itemprop="url">
+                  真机调试CocoaPods提示LibraryNotLoaded
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2015-11-30T23:12:18+08:00" content="2015-11-30">
+              2015-11-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/30/4-LibraryNotLoadedCocoaPods/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/30/4-LibraryNotLoadedCocoaPods/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>用真机调试，控制台打印以下log,但是模拟器却没有问题。</p>
+<blockquote>
+<p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
+</blockquote>
+<p>网上找了一圈，有人说把”Embedded Content Contains Swift Code” flag in the Build Settings that needs to be set to YES. It was NO by default!，我按步骤操作了下，继续跑了下，然并卵。。也有人说把ENABLE_BITCODE Change to YES, 但 然并卵Again。。</p>
+<p>最后的解决办法是在CocoPods in github 找到的，供参考：</p>
+<blockquote>
+<p>The issue was the Pods.framework was set to required and not optional. Setting this to optional fixed the issue.<br>把Pods_Fentch.framework 的 status change to ‘Optional’<br><img src="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png" alt=""></p>
+</blockquote>
+<p>参考地址：<a href="https://github.com/CocoaPods/CocoaPods/issues/3586" target="_blank" rel="external">https://github.com/CocoaPods/CocoaPods/issues/3586</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/10/01/3-Translation-LearningIOSProgramming/" itemprop="url">
                   (译)Learning IOS Programming
                 </a>
@@ -638,7 +767,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
