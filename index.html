@@ -248,6 +248,147 @@
             
               
                 
+                <a class="post-title-link" href="/2016/01/04/8-FindOutCNCharacters/" itemprop="url">
+                  在Xcode和AS中查找中文字符
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-01-04T21:05:13+08:00" content="2016-01-04">
+              2016-01-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Tips/" itemprop="url" rel="index">
+                    <span itemprop="name">Tips</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/01/04/8-FindOutCNCharacters/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/04/8-FindOutCNCharacters/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们的代码里出现中文汉字，基本上是因为项目时间紧，为了快速开发，先Hard Code 代码里。</p>
+<p>但是后期项目要进行国际化，必须要把汉字替换回来。然而如果一个一个地找然后替换，费时又费力，即使再仔细，也难免会有漏网之鱼。</p>
+<p>懒人总有懒方法。—在搜索框里使用正则表达式</p>
+<p><strong>Xcode:</strong></p>
+<blockquote>
+<ol>
+<li>打开”Find Navigator” , 快捷键 Command+Shift+F</li>
+<li>切换搜索模式到 “Find &gt; Regular Expression”</li>
+<li>输入    <strong><code>&quot;[^&quot;]*[\u4E00-\u9FA5]+[^&quot;\n]*?&quot;</code></strong> </li>
+</ol>
+</blockquote>
+<p><img src="http://ww1.sinaimg.cn/large/8c0dc373gw1f1d01ytrmsj20b409wq4h.jpg" alt=""></p>
+<p><strong>Android Studio:</strong></p>
+<blockquote>
+<ol>
+<li>使用快捷键 Command+Shift+F 打开</li>
+<li>勾选 Regular expression 复选框</li>
+<li>输入   <strong><code>&quot;[^&quot;]*[\u4E00-\u9FA5]+[^&quot;\n]*?&quot;</code></strong></li>
+</ol>
+</blockquote>
+<p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1f1d02r81nzj20b40eb0ub.jpg" alt=""></p>
+<p>重点在于第三步的能找到中文字符的正则表达式。你Get到了么？</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/12/10/7-SwiftTypeCompatibilityObjc/" itemprop="url">
                   Swift的类型兼容和@Objc修饰符
                 </a>
@@ -1153,7 +1294,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
@@ -1161,7 +1302,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -1227,7 +1368,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2015</span>
+  <span itemprop="copyrightYear">2016</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
