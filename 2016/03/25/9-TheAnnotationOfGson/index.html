@@ -90,7 +90,7 @@
 <meta property="og:url" content="https://pandaape.github.io/2016/03/25/9-TheAnnotationOfGson/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
 <meta property="og:description" content="源起今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢">
-<meta property="og:updated_time" content="2016-03-27T08:24:01.000Z">
+<meta property="og:updated_time" content="2016-06-20T16:58:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="说说Gson中的注解">
 <meta name="twitter:description" content="源起今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢">
@@ -361,7 +361,7 @@
 <h3 id="SerializedName示例"><a href="#SerializedName示例" class="headerlink" title="SerializedName示例"></a>SerializedName示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car car = <span class="keyword">new</span> Car();</span><br><span class="line">   car.setBrand(<span class="string">"BMW"</span>);</span><br><span class="line">   car.setEngineModel(<span class="string">"bt7320xe"</span>);</span><br><span class="line"></span><br><span class="line">   String jsonStr = <span class="string">"Car实例中各属性的值：\n"</span> + car + <span class="string">"\n\n加注解后JSON:\n"</span> + <span class="keyword">new</span> Gson().toJson(car);</span><br><span class="line">   tvResults.setText(jsonStr);</span><br></pre></td></tr></table></figure>
 <p>Log</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car实例中各属性的值：</span><br><span class="line">brand=BMW</span><br><span class="line">engineModel=bt7320xe</span><br><span class="line"></span><br><span class="line">加注解后JSON:</span><br><span class="line">&#123;&quot;brandName&quot;:&quot;BMW&quot;,&quot;engineModel&quot;:&quot;bt7320xe&quot;&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p><a href="https://github.com/pandaApe/GsonAnnotationDemo" target="_blank" rel="external">Demo 地址</a><br><a href="http://www.javacreed.com/gson-annotations-example/" target="_blank" rel="external">GSON ANNOTATIONS EXAMPLE</a><br><a href="https://github.com/google/gson" target="_blank" rel="external">Gson github</a></p>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p><a href="https://github.com/pandaApe/GsonAnnotationDemo" target="_blank" rel="external">Demo 地址</a><br><a href="http://www.javacreed.com/gson-annotations-example/" target="_blank" rel="external">Gson Annotations Example</a><br><a href="https://github.com/google/gson" target="_blank" rel="external">Gson GitHub</a></p>
 
       
     </div>
