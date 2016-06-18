@@ -248,6 +248,175 @@
             
               
                 
+                <a class="post-title-link" href="/2016/03/25/9-TheAnnotationOfGson/" itemprop="url">
+                  说说Gson中的注解
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-03-25T20:03:08+08:00" content="2016-03-25">
+              2016-03-25
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/25/9-TheAnnotationOfGson/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/25/9-TheAnnotationOfGson/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h2><p>今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢失，那么Activity之间传值就会出现问题。</p>
+<p>其实Gson中提供了<strong>@Expose</strong>注解来解决这个问题，除此之外还有三种，归纳起来共分三类，今天我们一起研究研究它们各自的作用。</p>
+<h2 id="Control-Exposure"><a href="#Control-Exposure" class="headerlink" title="Control Exposure"></a>Control Exposure</h2><p><strong>@Expose</strong> 注解提供了一个更好的解决文章开头问题方案，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Expose;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">People</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String objectId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">true</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String sex;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Date updateDate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Setter and Getter Methods removed for brevity</span></span><br><span class="line"></span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(<span class="string">"objectId="</span>).append(getObjectId()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"name="</span>).append(getName()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"sex="</span>).append(getSex()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"age="</span>).append(getAge()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"updateDate="</span>).append(getUpdateDate()).append(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>@Expose</strong> 注解有两个element: <strong>serialize</strong> 、<strong>deserialize</strong>，分别控制属性的可序列化和可反序列化，参照上面代码的例子，我新增加一个表帮助理解。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Field</th>
+<th style="text-align:center">Serialise</th>
+<th style="text-align:center">deserialize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">@Expose(serialize = false, deserialize = false)</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">false</td>
+</tr>
+<tr>
+<td style="text-align:center">@Expose</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">true</td>
+</tr>
+<tr>
+<td style="text-align:center">@Expose(serialize = true, deserialize = false)</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">false</td>
+</tr>
+<tr>
+<td style="text-align:center">@Expose(serialize = false, deserialize = true)</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">true</td>
+</tr>
+<tr>
+<td style="text-align:center">不写</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">false</td>
+</tr>
+</tbody>
+</table>
+<p>只给属性加上@Expose注解还是不够的，另外需要在得到Gson实例时做一项设置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> GsonBuilder builder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">builder.excludeFieldsWithoutExposeAnnotation();</span><br><span class="line"><span class="keyword">final</span> Gson gson = builder.create();</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第二行代码如果没有写，和没加@Expose注解时一样的效果。</p>
+</blockquote>
+<h3 id="Expose注解示例"><a href="#Expose注解示例" class="headerlink" title="@Expose注解示例"></a>@Expose注解示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">People people = <span class="keyword">new</span> People();</span><br><span class="line">    people.setObjectId(<span class="string">"1"</span>);</span><br><span class="line">    people.setAge(<span class="number">18</span>);</span><br><span class="line">    people.setName(<span class="string">"XiaoMing"</span>);</span><br><span class="line">    people.setSex(<span class="string">"男"</span>);</span><br><span class="line">    people.setUpdateDate(<span class="keyword">new</span> Date());</span><br><span class="line"></span><br><span class="line">    GsonBuilder gsonBuilder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">    gsonBuilder.excludeFieldsWithoutExposeAnnotation();</span><br><span class="line"></span><br><span class="line">    Gson gson = gsonBuilder.create();</span><br><span class="line">    String jsonStr = <span class="keyword">new</span> Gson().toJson(people);</span><br><span class="line"></span><br><span class="line">    People p = gson.fromJson(jsonStr, People.class);</span><br><span class="line"></span><br><span class="line">     String logStr = <span class="string">"Java 实例：\n"</span> + people + <span class="string">"\n不加注解时的JSON:\n"</span> + jsonStr + <span class="string">"\n\n加注解后的JSON:\n"</span> + gson.toJson(people) + <span class="string">"\n\n加注解后进行反序列化:\n"</span> + p;</span><br><span class="line">    Log.d(MainActivity.class.getSimpleName() + <span class="string">"--&gt; "</span>, logStr);</span><br><span class="line">    tvResults.setText(logStr);</span><br></pre></td></tr></table></figure>
+<p>控制台打印出Log:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Java 实例：</span><br><span class="line">objectId=1</span><br><span class="line">name=XiaoMing</span><br><span class="line">sex=男</span><br><span class="line">age=18</span><br><span class="line">updateDate=Sat Mar 26 19:03:55 GMT+08:00 2016</span><br><span class="line"></span><br><span class="line">不加注解时的JSON:</span><br><span class="line">&#123;&quot;age&quot;:18,&quot;name&quot;:&quot;XiaoMing&quot;,&quot;objectId&quot;:&quot;1&quot;,&quot;sex&quot;:&quot;男&quot;,&quot;updateDate&quot;:&quot;Mar 26, 2016 7:03:55 PM&quot;&#125;</span><br><span class="line"></span><br><span class="line">加注解后的JSON:</span><br><span class="line">&#123;&quot;name&quot;:&quot;XiaoMing&quot;,&quot;sex&quot;:&quot;男&quot;&#125;</span><br><span class="line"></span><br><span class="line">加注解后进行反序列化:</span><br><span class="line">objectId=null</span><br><span class="line">name=XiaoMing</span><br><span class="line">sex=null</span><br><span class="line">age=18</span><br><span class="line">updateDate=null</span><br></pre></td></tr></table></figure></p>
+<p>objectId, sex的@Expose注解的deserialize为false, updateDate并没有加注解，根据上文的表格，它的serialize和deserialize都为false，所以在反序列化时被忽略，最后值为null.</p>
+<h3 id="Expose注解总结"><a href="#Expose注解总结" class="headerlink" title="@Expose注解总结"></a>@Expose注解总结</h3><p><em>Gson提供的@Expose注解，可以我开发人员很方便控制Model中的属性是否支持 序列化和反序列化。
+</em>注意要使@Expose注解起作用，需要通过GsonBuilder进行创建，并且GsonBuilder实例要设置为excludeFieldsWithoutExposeAnnotation。<br>*属性没有用@Expose修饰，Gson无论在序列化还是反序列化时都会将其忽略。</p>
+<h2 id="Version"><a href="#Version" class="headerlink" title="Version"></a>Version</h2><p>Gson 提供 <strong>@Since</strong>和<strong>@Until</strong> 注解，进行Model类序列化和反序列化的版本控制。<strong>@Since</strong>和<strong>@Until</strong> 是两个相反的意义,他们都有一个double型参数。 Show my code:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Since;</span><br><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Until;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Until</span>(<span class="number">0.3</span>)</span><br><span class="line">    <span class="keyword">private</span> String stNo;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Since</span>(<span class="number">0.4</span>)</span><br><span class="line">    <span class="keyword">private</span> String studentNo;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> score;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(<span class="string">"stNo="</span>).append(getStNo()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"studentNo="</span>).append(getStudentNo()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"name="</span>).append(getName()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"score="</span>).append(getScore()).append(<span class="string">",\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Setter and Getter Methods removed for brevity</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>@Until(0.3) GsonBuilder指定的版本小于0.3(不包含)，Gson才会解析这个属性，大于则忽略。<br>@Since(0.4) GsonBuilder指定的版本大于0.4(包含)，Gson都会解析这个属性，小于则忽略。</p>
+</blockquote>
+<h3 id="Version示例"><a href="#Version示例" class="headerlink" title="Version示例"></a>Version示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Student student = <span class="keyword">new</span> Student();</span><br><span class="line">student.setName(<span class="string">"HanMeiMei"</span>);</span><br><span class="line">student.setScore(<span class="number">60</span>);</span><br><span class="line">student.setStNo(<span class="string">"001"</span>);</span><br><span class="line">student.setStudentNo(<span class="string">"001"</span>);</span><br><span class="line"></span><br><span class="line">GsonBuilder gsonBuilder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">String versionStr;</span><br><span class="line"><span class="keyword">if</span> (switchFlag &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    gsonBuilder.setVersion(<span class="number">0.2</span>);</span><br><span class="line">    versionStr = <span class="string">"0.2"</span>;</span><br><span class="line">    ((Button)view).setText(<span class="string">"Version 0.4"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    versionStr = <span class="string">"0.4"</span>;</span><br><span class="line">    gsonBuilder.setVersion(<span class="number">0.4</span>);</span><br><span class="line">    ((Button)view).setText(<span class="string">"Version 0.2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">switchFlag *= -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">Gson gson = gsonBuilder.create();</span><br><span class="line"></span><br><span class="line">String jsonStr = <span class="string">"Student实例的各属性值：\n"</span> + student + <span class="string">"\n不加注解的JSON:\n"</span> + <span class="keyword">new</span> Gson().toJson(student) + <span class="string">"\n\n"</span> + versionStr + <span class="string">" 版本JSON:\n"</span> + gson.toJson(student);</span><br><span class="line"></span><br><span class="line">tvResults.setText(jsonStr);</span><br></pre></td></tr></table></figure>
+<p>版本0.2 的JSON:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"name"</span>:<span class="string">"HanMeiMei"</span>,<span class="attr">"score"</span>:<span class="number">60</span>,<span class="attr">"stNo"</span>:<span class="string">"001"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>版本0.4 的JSON:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"name"</span>:<span class="string">"HanMeiMei"</span>,<span class="attr">"score"</span>:<span class="number">60</span>,<span class="attr">"studentNo"</span>:<span class="string">"001"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>version为0.2时 studentNo被忽略<br>version为0.4时 stNo被忽略</p>
+<h3 id="Version-总结"><a href="#Version-总结" class="headerlink" title="Version 总结"></a>Version 总结</h3><ul>
+<li>需要GsonBuilder的实例指定版本号<strong>@Until</strong>和<strong>@Since</strong>才会起作用。</li>
+<li>@Until(0.3) 并不包含0.3</li>
+</ul>
+<h2 id="SerializedName"><a href="#SerializedName" class="headerlink" title="SerializedName"></a>SerializedName</h2><p><strong>@SerializedName</strong>注解使用比较多的场景是当后端返回JSON中的名称与我们定义的Model类不一致时的情况。<br>比如 下面的示例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.SerializedName;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SerializedName</span>(<span class="string">"brandName"</span>)</span><br><span class="line">    <span class="keyword">private</span> String brand;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String engineModel;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"name="</span>+getName()+<span class="string">"\nengineModel="</span>+getEngineModel();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//Setter and getter methods removed for brevity</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于Car这个类中的表示品牌名字属性，本地字义为 brand , 后端字义为brandName，对于这种情况，使用<strong>@SerializedName</strong>注解可以实现本地和后端兼容。<br><strong>@SerializedName</strong>的一个字符串参数，为序列化为JSON后的属性名称。</p>
+<h3 id="SerializedName示例"><a href="#SerializedName示例" class="headerlink" title="SerializedName示例"></a>SerializedName示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car car = <span class="keyword">new</span> Car();</span><br><span class="line">   car.setBrand(<span class="string">"BMW"</span>);</span><br><span class="line">   car.setEngineModel(<span class="string">"bt7320xe"</span>);</span><br><span class="line"></span><br><span class="line">   String jsonStr = <span class="string">"Car实例中各属性的值：\n"</span> + car + <span class="string">"\n\n加注解后JSON:\n"</span> + <span class="keyword">new</span> Gson().toJson(car);</span><br><span class="line">   tvResults.setText(jsonStr);</span><br></pre></td></tr></table></figure>
+<p>Log</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car实例中各属性的值：</span><br><span class="line">brand=BMW</span><br><span class="line">engineModel=bt7320xe</span><br><span class="line"></span><br><span class="line">加注解后JSON:</span><br><span class="line">&#123;&quot;brandName&quot;:&quot;BMW&quot;,&quot;engineModel&quot;:&quot;bt7320xe&quot;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p><a href="https://github.com/pandaApe/GsonAnnotationDemo" target="_blank" rel="external">Demo 地址</a><br><a href="http://www.javacreed.com/gson-annotations-example/" target="_blank" rel="external">GSON ANNOTATIONS EXAMPLE</a><br><a href="https://github.com/google/gson" target="_blank" rel="external">Gson github</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/01/04/8-FindOutCNCharacters/" itemprop="url">
                   在Xcode和AS中查找中文字符
                 </a>
@@ -1294,7 +1463,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
