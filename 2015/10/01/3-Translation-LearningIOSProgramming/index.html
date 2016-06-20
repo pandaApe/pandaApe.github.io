@@ -1,0 +1,663 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="原文地址：http://codewithchris.com/learning-ios-programming/作者：Chris译文：
+1学习IOS编程最好的方法是什么？
+被问过很次这样的问题。写这编文章我想告诉大家，哪些事不该做和我认为学习ios最好的方法。我先来分享一个我第一次学习时失败的例子。
+怎样失败地学习IOS编程那时我在一家帮助客户开发客户端应用的咨询公司工作，三年前我被安排到一个开发i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(译)Learning IOS Programming">
+<meta property="og:url" content="https://pandaape.github.io/2015/10/01/3-Translation-LearningIOSProgramming/index.html">
+<meta property="og:site_name" content="PandaApe's Blog">
+<meta property="og:description" content="原文地址：http://codewithchris.com/learning-ios-programming/作者：Chris译文：
+1学习IOS编程最好的方法是什么？
+被问过很次这样的问题。写这编文章我想告诉大家，哪些事不该做和我认为学习ios最好的方法。我先来分享一个我第一次学习时失败的例子。
+怎样失败地学习IOS编程那时我在一家帮助客户开发客户端应用的咨询公司工作，三年前我被安排到一个开发i">
+<meta property="og:image" content="http://codewithchris.wpengine.netdna-cdn.com/img/BeginningiPhoneDevelopment.jpeg">
+<meta property="og:updated_time" content="2015-10-05T13:52:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(译)Learning IOS Programming">
+<meta name="twitter:description" content="原文地址：http://codewithchris.com/learning-ios-programming/作者：Chris译文：
+1学习IOS编程最好的方法是什么？
+被问过很次这样的问题。写这编文章我想告诉大家，哪些事不该做和我认为学习ios最好的方法。我先来分享一个我第一次学习时失败的例子。
+怎样失败地学习IOS编程那时我在一家帮助客户开发客户端应用的咨询公司工作，三年前我被安排到一个开发i">
+<meta name="twitter:image" content="http://codewithchris.wpengine.netdna-cdn.com/img/BeginningiPhoneDevelopment.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://pandaape.github.io/2015/10/01/3-Translation-LearningIOSProgramming/"/>
+
+  <title> (译)Learning IOS Programming | PandaApe's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">PandaApe's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">只要路是对的，就不怕远</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                (译)Learning IOS Programming
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2015-10-01T21:37:41+08:00" content="2015-10-01">
+              2015-10-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/翻译/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/10/01/3-Translation-LearningIOSProgramming/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/01/3-Translation-LearningIOSProgramming/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>原文地址：<a href="http://codewithchris.com/learning-ios-programming/" target="_blank" rel="external">http://codewithchris.com/learning-ios-programming/</a><br>作者：Chris<br>译文：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">学习IOS编程最好的方法是什么？</span><br></pre></td></tr></table></figure>
+<p>被问过很次这样的问题。写这编文章我想告诉大家，哪些事不该做和我认为学习ios最好的方法。我先来分享一个我第一次学习时失败的例子。</p>
+<h2 id="怎样失败地学习IOS编程"><a href="#怎样失败地学习IOS编程" class="headerlink" title="怎样失败地学习IOS编程"></a>怎样失败地学习IOS编程</h2><p>那时我在一家帮助客户开发客户端应用的咨询公司工作，三年前我被安排到一个开发iPad应用的任务，在那时，激起了我学习ios开发，学习Objective-C的热情，也因此得到报酬。</p>
+<p>我并不担心学习一样新的东西，因为我知道网上有足够的资源。尽管如此，我还是决定买本书来看，因为这是我在学校学习其他编程语言用的方法。我所看的书是：<code>《Beginning iPhone Development by Apress》</code><br><img src="http://codewithchris.wpengine.netdna-cdn.com/img/BeginningiPhoneDevelopment.jpeg" alt=""><br>这本书本身很不错（现在已经过时了），但是我犯的最大的错误就是从头读到尾的过程中并没有通过测试来巩固我学过的知识。你瞅瞅，仗着之前有编程的背景和学习其他语言的经历，让我有了很自信的错觉。我一边读书,一边理解它表达的思想，可当我读完整本书时，我却不知道如何开始做一个应用。</p>
+<p>我知道没有办法能让我记住这本书的全部内容。如果边读边实践，新知识将会有机会沉淀下来成为一种习惯。那么问题来了，这个错误我该怎么挽回？亡羊补劳，我开始看一些在线iPhone编程教程。这条路上，我依然犯了一些错误，但我跨越一道道障碍而变得更好。做过几个项目之后，开发IOS应用已经感觉舒服好多了。如果我一开始伴随着实践和犯错地学习，这要比读完整本书后再开始实践达到熟练程度的速度要快很多。熟悉概念真真是极好的，也许你觉得你能很好地理解，但是最终当你用笔写在纸上（于我们而言，用手指敲键盘）的时候，你就会知道你知识的空白区。问一些足够的问题去学习并提升。</p>
+<h2 id="学习IOS编程最好的方法"><a href="#学习IOS编程最好的方法" class="headerlink" title="学习IOS编程最好的方法"></a>学习IOS编程最好的方法</h2><p>我有编程经验，话虽如此，我确实相信学习任何事最好的方法是尽快行动和犯错误。放弃不断地阅读和看视频的学习方法，将你的知识付诸实践你才能真正认识到你知识中的空白。<br>学习IOS编程也是一样。最好的方法就是打开Xcode,并创建一个HelloWord的Demo。对于一个熟练的程序员来说，运行的时候在屏幕上输出“Hello Word” 只是一个非常简单的事。由此开始，学习如何在屏幕上布局UI控件，如何反馈用户的交互和手势。接着学习怎样添加一个子View到你的应用中，两个View之间如何导航。最后，学习如何使用UITableView控件，你可以在你的程序中一行一行显示可以滑动的数据。到那时，你就会更有信心并取得进步，这些将成为你学习更多知识的资本。不断地尝试学习新东西最大的障碍是，在没有取得进步时灰心并放弃。如果你克服这一点,你就会很快创建一个你自己的应用，你会思考为什么你曾想过放弃！</p>
+<h2 id="Code-With-Chris"><a href="#Code-With-Chris" class="headerlink" title="Code With Chris"></a>Code With Chris</h2><p>我深信实践是学习如何做一个iPhone应用很好的途经。我制作了一些免费的入门视频教程，这些教程都遵循以实践为目的的思想。建议大家看一看，在自己的电脑上继续实践，你会惊讶地发现在没有任何开发经验的前提下你依然能够学到很多！</p>
+<p>戳<a href="http://codewithchris.com/how-to-make-an-iphone-app" target="_blank" rel="external">此处</a>获取视频</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/22/2-CostomMenu/" rel="next" title="自定义 选择内容后 的菜单">
+                <i class="fa fa-chevron-left"></i> 自定义 选择内容后 的菜单
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/30/4-LibraryNotLoadedCocoaPods/" rel="prev" title="真机调试CocoaPods提示LibraryNotLoaded">
+                真机调试CocoaPods提示LibraryNotLoaded <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/10/01/3-Translation-LearningIOSProgramming/"
+           data-title="(译)Learning IOS Programming" data-url="https://pandaape.github.io/2015/10/01/3-Translation-LearningIOSProgramming/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="PandaApe" />
+          <p class="site-author-name" itemprop="name">PandaApe</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/pandaApe" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://pandaape.github.io/resume/" target="_blank" title="Resume">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Resume
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样失败地学习IOS编程"><span class="nav-number">1.</span> <span class="nav-text">怎样失败地学习IOS编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#学习IOS编程最好的方法"><span class="nav-number">2.</span> <span class="nav-text">学习IOS编程最好的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-With-Chris"><span class="nav-number">3.</span> <span class="nav-text">Code With Chris</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PandaApe</span>
+</div>
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="http://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"whailong2010"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
