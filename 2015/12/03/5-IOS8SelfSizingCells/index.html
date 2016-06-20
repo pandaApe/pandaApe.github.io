@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="概述在IOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在IOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
+<meta name="description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IOS8后使用AutoLayot自动计算Cell高度">
+<meta property="og:title" content="iOS8后使用AutoLayot自动计算Cell高度">
 <meta property="og:url" content="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="概述在IOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在IOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
+<meta property="og:description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg">
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4a8r42vj21kw0mvq9y.jpg">
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4e54wfdg208g0f34qp.gif">
-<meta property="og:updated_time" content="2016-03-25T13:41:54.000Z">
+<meta property="og:updated_time" content="2016-06-20T17:50:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IOS8后使用AutoLayot自动计算Cell高度">
-<meta name="twitter:description" content="概述在IOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在IOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
+<meta name="twitter:title" content="iOS8后使用AutoLayot自动计算Cell高度">
+<meta name="twitter:description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
 <meta name="twitter:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg">
 
 
@@ -120,7 +120,7 @@
 
   <link rel="canonical" href="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/"/>
 
-  <title> IOS8后使用AutoLayot自动计算Cell高度 | PandaApe's Blog </title>
+  <title> iOS8后使用AutoLayot自动计算Cell高度 | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -250,7 +250,7 @@
             
             
               
-                IOS8后使用AutoLayot自动计算Cell高度
+                iOS8后使用AutoLayot自动计算Cell高度
               
             
           </h1>
@@ -303,7 +303,7 @@
 
           
           
-             <span id="/2015/12/03/5-IOS8SelfSizingCells/" class="leancloud_visitors" data-flag-title="IOS8后使用AutoLayot自动计算Cell高度">
+             <span id="/2015/12/03/5-IOS8SelfSizingCells/" class="leancloud_visitors" data-flag-title="iOS8后使用AutoLayot自动计算Cell高度">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -325,7 +325,7 @@
       
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在IOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在IOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方案.</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方案.</p>
 <h2 id="使用Self-Sizing-Cells-的正确姿势"><a href="#使用Self-Sizing-Cells-的正确姿势" class="headerlink" title="使用Self-Sizing Cells 的正确姿势"></a>使用Self-Sizing Cells 的正确姿势</h2><p>要满足下面三个条件：</p>
 <ul>
 <li>Tableview 的cell 要使用 autolayout 约束</li>
@@ -400,7 +400,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2015/12/03/5-IOS8SelfSizingCells/"
-           data-title="IOS8后使用AutoLayot自动计算Cell高度" data-url="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/">
+           data-title="iOS8后使用AutoLayot自动计算Cell高度" data-url="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/">
       </div>
     
   </div>
