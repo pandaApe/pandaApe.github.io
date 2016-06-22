@@ -345,6 +345,19 @@
 </blockquote>
 <p>Terminal 里查看结果：<br><img src="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg" alt=""></p>
 <p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/352098/how-can-i-pretty-print-json" target="_blank" rel="external">How can I pretty-print JSON? </a></p>
+<h2 id="Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods"><a href="#Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods" class="headerlink" title="[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods"></a>[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods</h2><p>使用Cocoapods管理依赖，用真机运行时，控制台打印：</p>
+<blockquote>
+<p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
+</blockquote>
+<p>Step 1:</p>
+<blockquote>
+<p>disable bit code</p>
+</blockquote>
+<p>Step 2:</p>
+<blockquote>
+<p>The issue was the Pods.framework was set to required and not optional. It wasn’t being copied to device by the .sh script and so the app crashed. Setting this to optional fixed the issue.<br><img src="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png" alt=""></p>
+</blockquote>
+<p>参考链接：<br>[1]: <a href="https://github.com/CocoaPods/CocoaPods/issues/3586" target="_blank" rel="external">CocoaPods issue#3586 </a><br>[2]: <a href="http://stackoverflow.com/questions/30053144/dyld-library-not-loaded-with-cocoapods-0-37-and-xcode-6-3/30166310#30166310" target="_blank" rel="external">The solution on sack overflow </a></p>
 
           
         
