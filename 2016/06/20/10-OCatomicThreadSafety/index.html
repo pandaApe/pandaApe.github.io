@@ -84,24 +84,19 @@
 
 
 
-<meta name="description" content="用真机调试，控制台打印以下log,但是模拟器却没有问题。
-
-dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetc">
+<meta name="description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:
+从源码着手对于一个没有自定义setter方法的属性，编译后编译器会生成一个">
 <meta property="og:type" content="article">
-<meta property="og:title" content="真机调试CocoaPods提示LibraryNotLoaded">
-<meta property="og:url" content="https://pandaape.github.io/2015/11/30/4-LibraryNotLoadedCocoaPods/index.html">
+<meta property="og:title" content="使用atomic修饰的属性并不会线程安全">
+<meta property="og:url" content="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="用真机调试，控制台打印以下log,但是模拟器却没有问题。
-
-dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetc">
-<meta property="og:image" content="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png">
-<meta property="og:updated_time" content="2016-03-25T13:41:49.000Z">
+<meta property="og:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:
+从源码着手对于一个没有自定义setter方法的属性，编译后编译器会生成一个">
+<meta property="og:updated_time" content="2016-06-23T13:32:43.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="真机调试CocoaPods提示LibraryNotLoaded">
-<meta name="twitter:description" content="用真机调试，控制台打印以下log,但是模拟器却没有问题。
-
-dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetc">
-<meta name="twitter:image" content="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png">
+<meta name="twitter:title" content="使用atomic修饰的属性并不会线程安全">
+<meta name="twitter:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:
+从源码着手对于一个没有自定义setter方法的属性，编译后编译器会生成一个">
 
 
 
@@ -122,9 +117,9 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/11/30/4-LibraryNotLoadedCocoaPods/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/"/>
 
-  <title> 真机调试CocoaPods提示LibraryNotLoaded | PandaApe's Blog </title>
+  <title> 使用atomic修饰的属性并不会线程安全 | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -254,7 +249,7 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
             
             
               
-                真机调试CocoaPods提示LibraryNotLoaded
+                使用atomic修饰的属性并不会线程安全
               
             
           </h1>
@@ -266,8 +261,8 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-11-30T23:12:18+08:00" content="2015-11-30">
-              2015-11-30
+            <time itemprop="dateCreated" datetime="2016-06-20T21:37:41+08:00" content="2016-06-20">
+              2016-06-20
             </time>
           </span>
 
@@ -296,8 +291,8 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/11/30/4-LibraryNotLoadedCocoaPods/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/30/4-LibraryNotLoadedCocoaPods/" itemprop="commentsCount"></span>
+                <a href="/2016/06/20/10-OCatomicThreadSafety/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/20/10-OCatomicThreadSafety/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -307,7 +302,7 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
 
           
           
-             <span id="/2015/11/30/4-LibraryNotLoadedCocoaPods/" class="leancloud_visitors" data-flag-title="真机调试CocoaPods提示LibraryNotLoaded">
+             <span id="/2016/06/20/10-OCatomicThreadSafety/" class="leancloud_visitors" data-flag-title="使用atomic修饰的属性并不会线程安全">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -329,16 +324,15 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
       
 
       
-        <p>用真机调试，控制台打印以下log,但是模拟器却没有问题。</p>
-<blockquote>
-<p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
-</blockquote>
-<p>网上找了一圈，有人说把”Embedded Content Contains Swift Code” flag in the Build Settings that needs to be set to YES. It was NO by default!，我按步骤操作了下，继续跑了下，然并卵。。也有人说把ENABLE_BITCODE Change to YES, 但 然并卵Again。。</p>
-<p>最后的解决办法是在CocoPods in github 找到的，供参考：</p>
-<blockquote>
-<p>The issue was the Pods.framework was set to required and not optional. Setting this to optional fixed the issue.<br>把Pods_Fentch.framework 的 status change to ‘Optional’<br><img src="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png" alt=""></p>
-</blockquote>
-<p>参考地址：<a href="https://github.com/CocoaPods/CocoaPods/issues/3586" target="_blank" rel="external">https://github.com/CocoaPods/CocoaPods/issues/3586</a></p>
+        <h2 id="误解"><a href="#误解" class="headerlink" title="误解"></a>误解</h2><p>一开始我们都认为 <strong>noatomic</strong> 非原子性，其修饰的属性是非线程安全的，而 <strong>atomic</strong>原子性修饰的属性是线程安全。其实事实并非如此。<br>被<strong>atomic</strong>修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:</p>
+<h2 id="从源码着手"><a href="#从源码着手" class="headerlink" title="从源码着手"></a>从源码着手</h2><p>对于一个没有自定义setter方法的属性，编译后编译器会生成一个 <code>objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)</code> 的调用，源码在下面：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setProperty</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SUPPORT_GC</span></span><br><span class="line">    (UseGC ? objc_setProperty_gc : objc_setProperty_non_gc)</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    objc_setProperty_non_gc</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        (self, _cmd, offset, newValue, atomic, shouldCopy);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">PRIVATE_EXTERN <span class="keyword">void</span> <span class="title">objc_setProperty_non_gc</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Retain release world</span></span><br><span class="line">    id oldValue, *slot = (id*) ((<span class="keyword">char</span>*)self + offset);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// atomic or not, if slot would be unchanged, do nothing.</span></span><br><span class="line">    <span class="keyword">if</span> (!shouldCopy &amp;&amp; *slot == newValue) <span class="keyword">return</span>;</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">if</span> (shouldCopy) &#123;</span><br><span class="line">        newValue = (shouldCopy == OBJC_PROPERTY_MUTABLECOPY ? [newValue mutableCopyWithZone:<span class="literal">NULL</span>] : [newValue copyWithZone:<span class="literal">NULL</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newValue = objc_retain(newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!atomic) &#123;</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">spin_lock_t</span> *slotlock = &amp;PropertyLocks[GOODHASH(slot)];</span><br><span class="line">        _spin_lock(slotlock);</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;        </span><br><span class="line">        _spin_unlock(slotlock);        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    objc_release(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码的方法命名有点不习惯，但是也并不会影响理解，第24行有个是否使用<strong>atomic</strong>修饰的判断，我们看else中的代码。</p>
+<p>从使用PropertyLocks数组中的一个给写操作上锁，在赋完值之后进行解锁操作。</p>
+<p>也就是说，<strong>atomic</strong>只是在 setter方法 中加锁，当多个线程同时写操作时，要进行排队。A线程对属性进行写操作，B线程不可以对该属性进行写操作，只有等A线程访问结束，B线程才能操作。问题在于，当A线程再想对属性进行读操作，读取的是B线程写的数据，这就破坏了线程安全,。如果再有C线程在A线程读操作前Release这个属性，那么程序就会Crash.<br>综上，<strong>atomic</strong> 操作是原子性的，它只保证了属性的setter和getter时的线程安全，并不能保证属性线程安全，<strong>atomic</strong>的使用只是更好的降低的线程出错的可能性。</p>
+<h2 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h2><p>那么问题来了，Apple为什么只给setter和getter方法加锁而不直接使用<strong>@synchronized</strong>加锁呢？<br>看看 <strong>synchronized</strong> 操作的<a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">源码</a>， 简单的一个注解，其实做了许多事情，每个<strong>@synchronized()</strong>代码块，使用了 objc_sync_enter、objc_sync_exit和id2data三个加解锁序列，而这种作法相比使用一个<strong>atomic</strong>来修饰，只给setter、getter方法加锁的方式 在性能上要慢很多。读写操作一个属性时，通常需要很快来完成，<strong>atomic</strong>的方式要适合这项工作。</p>
+<p>在必要时，可以使用<strong>@synchronized</strong>，但是在保证多线程操作在发生错误的时候，不会发生dead lock。</p>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p>[1]:  <a href="http://www.cnblogs.com/xuanhun/archive/2012/01/01/2309571.html" target="_blank" rel="external">Hash碰撞与拒绝服务攻击 </a><br>[2]:  <a href="http://opensource.apple.com/source/objc4/objc4-493.9/runtime/Accessors.subproj/objc-accessors.m" target="_blank" rel="external">Source code of objc-accessors.m file </a><br>[3]:  <a href="http://www.jianshu.com/p/e7e44dfb1d2b" target="_blank" rel="external">iOS多线程开发－线程安全 </a><br>[4]:  <a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">Source code of @synchronized </a><br>[5]:  <a href="http://googlemac.blogspot.sg/2006/10/synchronized-swimming.html" target="_blank" rel="external">Synchronized-swimming </a><br>[6]:  <a href="http://objccn.io/issue-2-4/" target="_blank" rel="external">线程安全类的设计 </a><br>[7]:  <a href="http://m.blog.csdn.net/article/details?id=49687215" target="_blank" rel="external">atomic一定是线程安全的吗？ </a></p>
 
       
     </div>
@@ -363,16 +357,16 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/10/01/3-Translation-LearningIOSProgramming/" rel="next" title="(译)Learning iOS Programming">
-                <i class="fa fa-chevron-left"></i> (译)Learning iOS Programming
+              <a href="/2016/03/25/9-TheAnnotationOfGson/" rel="next" title="说说Gson中的注解">
+                <i class="fa fa-chevron-left"></i> 说说Gson中的注解
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/12/03/5-IOS8SelfSizingCells/" rel="prev" title="iOS8后使用AutoLayot自动计算Cell高度">
-                iOS8后使用AutoLayot自动计算Cell高度 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/06/22/11-25thWeekDevTips/" rel="prev" title="第26周开发Tips">
+                第26周开发Tips <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -399,8 +393,8 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/11/30/4-LibraryNotLoadedCocoaPods/"
-           data-title="真机调试CocoaPods提示LibraryNotLoaded" data-url="https://pandaape.github.io/2015/11/30/4-LibraryNotLoadedCocoaPods/">
+      <div class="ds-thread" data-thread-key="2016/06/20/10-OCatomicThreadSafety/"
+           data-title="使用atomic修饰的属性并不会线程安全" data-url="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/">
       </div>
     
   </div>
@@ -511,7 +505,7 @@ dyld: Library not loaded: @rpath/Pods.framework/PodsReferenced from: /private/va
               
             
             
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#误解"><span class="nav-number">1.</span> <span class="nav-text">误解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从源码着手"><span class="nav-number">2.</span> <span class="nav-text">从源码着手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题来了"><span class="nav-number">3.</span> <span class="nav-text">问题来了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接："><span class="nav-number">4.</span> <span class="nav-text">参考链接：</span></a></li></ol></div>
             
           </div>
         </section>

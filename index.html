@@ -248,6 +248,270 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/22/11-25thWeekDevTips/" itemprop="url">
+                  第26周开发Tips
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-06-22T21:00:02+08:00" content="2016-06-22">
+              2016-06-22
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/22/11-25thWeekDevTips/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/22/11-25thWeekDevTips/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/06/22/11-25thWeekDevTips/" class="leancloud_visitors" data-flag-title="第26周开发Tips">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">visitors </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装Node-js时，提示-nvm-command-not-found"><a href="#安装Node-js时，提示-nvm-command-not-found" class="headerlink" title="安装Node.js时，提示 nvm: command not found"></a>安装Node.js时，提示 <strong>nvm: command not found</strong></h2><p>解决办法是： 执行 nvm 命令前，先执行 <code>source ~/.nvm/nvm.sh</code> 命令。载入配置命令使nvm命令生效。</p>
+<p>可以把 <code>source ~/.nvm/nvm.sh</code> 命令 写进 <code>~/.profile</code> 或者 <code>~/.bashrc</code> 文件中, 下次打开Terminal 时会自动执行这个命令。 </p>
+<p>有可能 <code>~/.profile</code> 文件不存在（比如新安装系统的电脑），使用 </p>
+<blockquote>
+<p>touch ~/.profile<br>open -e !$ </p>
+</blockquote>
+<p>创建并打开，粘贴完保存就可以了。 对没错，<code>~/.profile</code> 文件一般就是用来设置环境变量的地方。</p>
+<p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/16904658/node-version-manager-install-nvm-command-not-found" target="_blank" rel="external">Node Version Manager install - nvm command not found </a><br>[2]: <a href="http://superuser.com/questions/473087/cant-find-profile-file-in-os-x" target="_blank" rel="external">Can’t find .profile file in OS X </a></p>
+<h2 id="Terminal-格式化-JSON"><a href="#Terminal-格式化-JSON" class="headerlink" title="Terminal 格式化 JSON"></a>Terminal 格式化 JSON</h2><p>方法1：</p>
+<blockquote>
+<p>echo ‘{“foo”: “lorem”, “bar”: “ipsum”}’ | python -m json.tool</p>
+</blockquote>
+<p>方法2(如果在文件里)：</p>
+<blockquote>
+<p>python -m json.tool my_json.json</p>
+</blockquote>
+<p><img src="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg" alt=""></p>
+<p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/352098/how-can-i-pretty-print-json" target="_blank" rel="external">How can I pretty-print JSON? </a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/20/10-OCatomicThreadSafety/" itemprop="url">
+                  使用atomic修饰的属性并不会线程安全
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-06-20T21:37:41+08:00" content="2016-06-20">
+              2016-06-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/20/10-OCatomicThreadSafety/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/20/10-OCatomicThreadSafety/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/06/20/10-OCatomicThreadSafety/" class="leancloud_visitors" data-flag-title="使用atomic修饰的属性并不会线程安全">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">visitors </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="误解"><a href="#误解" class="headerlink" title="误解"></a>误解</h2><p>一开始我们都认为 <strong>noatomic</strong> 非原子性，其修饰的属性是非线程安全的，而 <strong>atomic</strong>原子性修饰的属性是线程安全。其实事实并非如此。<br>被<strong>atomic</strong>修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:</p>
+<h2 id="从源码着手"><a href="#从源码着手" class="headerlink" title="从源码着手"></a>从源码着手</h2><p>对于一个没有自定义setter方法的属性，编译后编译器会生成一个 <code>objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)</code> 的调用，源码在下面：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setProperty</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SUPPORT_GC</span></span><br><span class="line">    (UseGC ? objc_setProperty_gc : objc_setProperty_non_gc)</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    objc_setProperty_non_gc</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        (self, _cmd, offset, newValue, atomic, shouldCopy);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">PRIVATE_EXTERN <span class="keyword">void</span> <span class="title">objc_setProperty_non_gc</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Retain release world</span></span><br><span class="line">    id oldValue, *slot = (id*) ((<span class="keyword">char</span>*)self + offset);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// atomic or not, if slot would be unchanged, do nothing.</span></span><br><span class="line">    <span class="keyword">if</span> (!shouldCopy &amp;&amp; *slot == newValue) <span class="keyword">return</span>;</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">if</span> (shouldCopy) &#123;</span><br><span class="line">        newValue = (shouldCopy == OBJC_PROPERTY_MUTABLECOPY ? [newValue mutableCopyWithZone:<span class="literal">NULL</span>] : [newValue copyWithZone:<span class="literal">NULL</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newValue = objc_retain(newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!atomic) &#123;</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">spin_lock_t</span> *slotlock = &amp;PropertyLocks[GOODHASH(slot)];</span><br><span class="line">        _spin_lock(slotlock);</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;        </span><br><span class="line">        _spin_unlock(slotlock);        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    objc_release(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码的方法命名有点不习惯，但是也并不会影响理解，第24行有个是否使用<strong>atomic</strong>修饰的判断，我们看else中的代码。</p>
+<p>从使用PropertyLocks数组中的一个给写操作上锁，在赋完值之后进行解锁操作。</p>
+<p>也就是说，<strong>atomic</strong>只是在 setter方法 中加锁，当多个线程同时写操作时，要进行排队。A线程对属性进行写操作，B线程不可以对该属性进行写操作，只有等A线程访问结束，B线程才能操作。问题在于，当A线程再想对属性进行读操作，读取的是B线程写的数据，这就破坏了线程安全,。如果再有C线程在A线程读操作前Release这个属性，那么程序就会Crash.<br>综上，<strong>atomic</strong> 操作是原子性的，它只保证了属性的setter和getter时的线程安全，并不能保证属性线程安全，<strong>atomic</strong>的使用只是更好的降低的线程出错的可能性。</p>
+<h2 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h2><p>那么问题来了，Apple为什么只给setter和getter方法加锁而不直接使用<strong>@synchronized</strong>加锁呢？<br>看看 <strong>synchronized</strong> 操作的<a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">源码</a>， 简单的一个注解，其实做了许多事情，每个<strong>@synchronized()</strong>代码块，使用了 objc_sync_enter、objc_sync_exit和id2data三个加解锁序列，而这种作法相比使用一个<strong>atomic</strong>来修饰，只给setter、getter方法加锁的方式 在性能上要慢很多。读写操作一个属性时，通常需要很快来完成，<strong>atomic</strong>的方式要适合这项工作。</p>
+<p>在必要时，可以使用<strong>@synchronized</strong>，但是在保证多线程操作在发生错误的时候，不会发生dead lock。</p>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p>[1]:  <a href="http://www.cnblogs.com/xuanhun/archive/2012/01/01/2309571.html" target="_blank" rel="external">Hash碰撞与拒绝服务攻击 </a><br>[2]:  <a href="http://opensource.apple.com/source/objc4/objc4-493.9/runtime/Accessors.subproj/objc-accessors.m" target="_blank" rel="external">Source code of objc-accessors.m file </a><br>[3]:  <a href="http://www.jianshu.com/p/e7e44dfb1d2b" target="_blank" rel="external">iOS多线程开发－线程安全 </a><br>[4]:  <a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">Source code of @synchronized </a><br>[5]:  <a href="http://googlemac.blogspot.sg/2006/10/synchronized-swimming.html" target="_blank" rel="external">Synchronized-swimming </a><br>[6]:  <a href="http://objccn.io/issue-2-4/" target="_blank" rel="external">线程安全类的设计 </a><br>[7]:  <a href="http://m.blog.csdn.net/article/details?id=49687215" target="_blank" rel="external">atomic一定是线程安全的吗？ </a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/03/25/9-TheAnnotationOfGson/" itemprop="url">
                   说说Gson中的注解
                 </a>
@@ -1374,138 +1638,13 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/08/21/1-Great-StartForMe/" itemprop="url">
-                  Great Start
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-08-21T16:45:53+08:00" content="2015-08-21">
-              2015-08-21
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/随笔/" itemprop="url" rel="index">
-                    <span itemprop="name">随笔</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/08/21/1-Great-StartForMe/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/21/1-Great-StartForMe/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/08/21/1-Great-StartForMe/" class="leancloud_visitors" data-flag-title="Great Start">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">visitors </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>  总是和忘记作对，但是从来没有斗赢过。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1544,7 +1683,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
@@ -1561,7 +1700,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">tags</span>
               
             </div>
