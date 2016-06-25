@@ -85,23 +85,20 @@
 
 
 <meta name="description" content="安装Node.js时，提示 nvm: command not found解决办法是： 执行 nvm 命令前，先执行 source ~/.nvm/nvm.sh 命令。载入配置命令使nvm命令生效。
-可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。 
-有可能 ~/.profile 文">
+可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第26周开发Tips">
 <meta property="og:url" content="https://pandaape.github.io/2016/06/22/11-25thWeekDevTips/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
 <meta property="og:description" content="安装Node.js时，提示 nvm: command not found解决办法是： 执行 nvm 命令前，先执行 source ~/.nvm/nvm.sh 命令。载入配置命令使nvm命令生效。
-可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。 
-有可能 ~/.profile 文">
+可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg">
 <meta property="og:image" content="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png">
-<meta property="og:updated_time" content="2016-06-23T14:38:49.000Z">
+<meta property="og:updated_time" content="2016-06-25T05:23:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="第26周开发Tips">
 <meta name="twitter:description" content="安装Node.js时，提示 nvm: command not found解决办法是： 执行 nvm 命令前，先执行 source ~/.nvm/nvm.sh 命令。载入配置命令使nvm命令生效。
-可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。 
-有可能 ~/.profile 文">
+可以把 source ~/.nvm/nvm.sh 命令 写进 ~/.profile 或者 ~/.bashrc 文件中, 下次打开Terminal 时会自动执行这个命令。">
 <meta name="twitter:image" content="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg">
 
 
@@ -340,8 +337,7 @@
 
       
         <h2 id="安装Node-js时，提示-nvm-command-not-found"><a href="#安装Node-js时，提示-nvm-command-not-found" class="headerlink" title="安装Node.js时，提示 nvm: command not found"></a>安装Node.js时，提示 <strong>nvm: command not found</strong></h2><p>解决办法是： 执行 nvm 命令前，先执行 <code>source ~/.nvm/nvm.sh</code> 命令。载入配置命令使nvm命令生效。</p>
-<p>可以把 <code>source ~/.nvm/nvm.sh</code> 命令 写进 <code>~/.profile</code> 或者 <code>~/.bashrc</code> 文件中, 下次打开Terminal 时会自动执行这个命令。 </p>
-<p>有可能 <code>~/.profile</code> 文件不存在（比如新安装系统的电脑），使用 </p>
+<p>可以把 <code>source ~/.nvm/nvm.sh</code> 命令 写进 <code>~/.profile</code> 或者 <code>~/.bashrc</code> 文件中, 下次打开Terminal 时会自动执行这个命令。<br><a id="more"></a><br>有可能 <code>~/.profile</code> 文件不存在（比如新安装系统的电脑），使用 </p>
 <blockquote>
 <p>touch ~/.profile<br>open -e !$ </p>
 </blockquote>
@@ -357,7 +353,7 @@
 </blockquote>
 <p>Terminal 里查看结果：<br><img src="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg" alt=""></p>
 <p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/352098/how-can-i-pretty-print-json" target="_blank" rel="external">How can I pretty-print JSON? </a></p>
-<h2 id="Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods"><a href="#Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods" class="headerlink" title="[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods"></a>[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods</h2><p>使用Cocoapods管理依赖，用真机运行时，控制台打印：</p>
+<h2 id="真机调试CocoaPods提示LibraryNotLoaded"><a href="#真机调试CocoaPods提示LibraryNotLoaded" class="headerlink" title="真机调试CocoaPods提示LibraryNotLoaded"></a>真机调试CocoaPods提示LibraryNotLoaded</h2><p>使用Cocoapods管理依赖，用真机运行时，控制台打印：</p>
 <blockquote>
 <p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
 </blockquote>
@@ -522,7 +518,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -580,7 +576,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Node-js时，提示-nvm-command-not-found"><span class="nav-number">1.</span> <span class="nav-text">安装Node.js时，提示 nvm: command not found</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Terminal-格式化-JSON"><span class="nav-number">2.</span> <span class="nav-text">Terminal 格式化 JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods"><span class="nav-number">3.</span> <span class="nav-text">[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Node-js时，提示-nvm-command-not-found"><span class="nav-number">1.</span> <span class="nav-text">安装Node.js时，提示 nvm: command not found</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Terminal-格式化-JSON"><span class="nav-number">2.</span> <span class="nav-text">Terminal 格式化 JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#真机调试CocoaPods提示LibraryNotLoaded"><span class="nav-number">3.</span> <span class="nav-text">真机调试CocoaPods提示LibraryNotLoaded</span></a></li></ol></div>
             
           </div>
         </section>

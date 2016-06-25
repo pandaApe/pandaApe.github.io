@@ -84,22 +84,16 @@
 
 
 
-<meta name="description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
-在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
-1234567+(id)f">
+<meta name="description" content="来自谷歌Mac团队，主要介绍 @synchronized代码块被编译后是如何工作的，使用之后会付出哪些代价，以及如何避免使用 @synchronized 来实现高性能的线程安全。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【译】@synchronized Swimming">
 <meta property="og:url" content="https://pandaape.github.io/2016/06/24/12-SynchronizedSwimming/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
-在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
-1234567+(id)f">
-<meta property="og:updated_time" content="2016-06-25T03:29:34.000Z">
+<meta property="og:description" content="来自谷歌Mac团队，主要介绍 @synchronized代码块被编译后是如何工作的，使用之后会付出哪些代价，以及如何避免使用 @synchronized 来实现高性能的线程安全。">
+<meta property="og:updated_time" content="2016-06-25T05:00:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="【译】@synchronized Swimming">
-<meta name="twitter:description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
-在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
-1234567+(id)f">
+<meta name="twitter:description" content="来自谷歌Mac团队，主要介绍 @synchronized代码块被编译后是如何工作的，使用之后会付出哪些代价，以及如何避免使用 @synchronized 来实现高性能的线程安全。">
 
 
 
@@ -336,7 +330,9 @@
       
 
       
-        <p>（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）</p>
+        <p>来自谷歌Mac团队，主要介绍 <strong>@synchronized</strong>代码块被编译后是如何工作的，使用之后会付出哪些代价，以及如何避免使用 <strong>@synchronized</strong> 来实现高性能的线程安全。</p>
+<a id="more"></a>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）</p>
 <p>在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 <strong>@synchronized</strong> ：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="keyword">id</span>)fooFerBar:(<span class="keyword">id</span>)bar &#123;</span><br><span class="line"><span class="keyword">@synchronized</span>(<span class="keyword">self</span>) &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">NSDictionary</span> *foo = <span class="literal">nil</span>;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [<span class="built_in">NSDictionary</span> dictionaryWithObjects:...];</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>代码里，每次调用 <strong>@synchronized</strong>代码块里的 <code>fooFerBar</code> 方法时无疑都会付出数毫秒的性能代价。为什么呢？我们不可以在 <code>+initialize</code> 创建资源，因为 <code>fooFerBar</code> 是在category里的，当然在caregory里重写 <code>+initialize</code> 也不是一件很nice的事。我们也不能使用 <code>+load</code> 来做，因为其他的类在他们内部的 <code>+load</code> 中可以很容易地调用 <code>fooFerBar</code> ， 并且无法保证有顺序地加载。 因此我们唯一的选择就是尽可能少的使用 <strong>@synchronized</strong>，毕竟我们都不想走进那个既不出名又让人恶心的 <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf" target="_blank" rel="external">double-checked locking anti-pattern </a> 。</p>
@@ -346,6 +342,7 @@
 <p>我们需要一个更好的办法。 该到返璞归真的时候了，甩走 <code>@synchronized</code> 调用，封装一个我们自己的 <code>pthread</code> 来代替：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">+(id)fooFerBar:(id)bar &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> mtx = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_lock(&amp;mtx)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"lock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">static</span> NSDictionary *foo = nil;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [NSDictionary dictionaryWithObjects:...];</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_unlock(&amp;mtx) != <span class="number">0</span>)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"unlock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>虽然看起来很丑，但是在性能上已经有了重大的提升，达到了我们期望的结果。看上面的代码，我们已经很好的避免了异常阻塞，两个访问锁，和一坨乱七八糟的辅助代码。</p>
 <p>至此，我们已经实现了我们代码更快的目标，并且它们运行得还不错，但是，还有没有其他更简洁的办法了呢？毕竟如果代码更简洁，也就意味着会有更少的隐藏bug。</p>
+<h2 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h2><p><a href="http://googlemac.blogspot.sg/2006/10/synchronized-swimming.html" target="_blank" rel="external">@synchronized-swimming </a></p>
 
       
     </div>
@@ -494,7 +491,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -552,7 +549,7 @@
               
             
             
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#正文"><span class="nav-number">1.</span> <span class="nav-text">正文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原文链接"><span class="nav-number">2.</span> <span class="nav-text">原文链接</span></a></li></ol></div>
             
           </div>
         </section>

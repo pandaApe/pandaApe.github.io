@@ -90,7 +90,7 @@
 <meta property="og:url" content="https://pandaape.github.io/2016/03/25/9-TheAnnotationOfGson/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
 <meta property="og:description" content="源起今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢">
-<meta property="og:updated_time" content="2016-06-20T16:58:03.000Z">
+<meta property="og:updated_time" content="2016-06-25T05:17:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="说说Gson中的注解">
 <meta name="twitter:description" content="源起今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢">
@@ -273,6 +273,25 @@
           </span>
 
           
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
 
           
             
@@ -311,8 +330,7 @@
       
 
       
-        <h2 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h2><p>今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢失，那么Activity之间传值就会出现问题。</p>
-<p>其实Gson中提供了<strong>@Expose</strong>注解来解决这个问题，除此之外还有三种，归纳起来共分三类，今天我们一起研究研究它们各自的作用。</p>
+        <h2 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h2><p>今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢失，那么Activity之间传值就会出现问题。<br><a id="more"></a><br>其实Gson中提供了<strong>@Expose</strong>注解来解决这个问题，除此之外还有三种，归纳起来共分三类，今天我们一起研究研究它们各自的作用。</p>
 <h2 id="Control-Exposure"><a href="#Control-Exposure" class="headerlink" title="Control Exposure"></a>Control Exposure</h2><p><strong>@Expose</strong> 注解提供了一个更好的解决文章开头问题方案，</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Expose;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">People</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String objectId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">true</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String sex;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Date updateDate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Setter and Getter Methods removed for brevity</span></span><br><span class="line"></span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(<span class="string">"objectId="</span>).append(getObjectId()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"name="</span>).append(getName()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"sex="</span>).append(getSex()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"age="</span>).append(getAge()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"updateDate="</span>).append(getUpdateDate()).append(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>@Expose</strong> 注解有两个element: <strong>serialize</strong> 、<strong>deserialize</strong>，分别控制属性的可序列化和可反序列化，参照上面代码的例子，我新增加一个表帮助理解。</p>
@@ -532,7 +550,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>

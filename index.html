@@ -335,19 +335,12 @@
 
       
         
-          
-            <p>（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）</p>
-<p>在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 <strong>@synchronized</strong> ：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="keyword">id</span>)fooFerBar:(<span class="keyword">id</span>)bar &#123;</span><br><span class="line"><span class="keyword">@synchronized</span>(<span class="keyword">self</span>) &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">NSDictionary</span> *foo = <span class="literal">nil</span>;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [<span class="built_in">NSDictionary</span> dictionaryWithObjects:...];</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码里，每次调用 <strong>@synchronized</strong>代码块里的 <code>fooFerBar</code> 方法时无疑都会付出数毫秒的性能代价。为什么呢？我们不可以在 <code>+initialize</code> 创建资源，因为 <code>fooFerBar</code> 是在category里的，当然在caregory里重写 <code>+initialize</code> 也不是一件很nice的事。我们也不能使用 <code>+load</code> 来做，因为其他的类在他们内部的 <code>+load</code> 中可以很容易地调用 <code>fooFerBar</code> ， 并且无法保证有顺序地加载。 因此我们唯一的选择就是尽可能少的使用 <strong>@synchronized</strong>，毕竟我们都不想走进那个既不出名又让人恶心的 <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf" target="_blank" rel="external">double-checked locking anti-pattern </a> 。</p>
-<p>我想知道， <strong>@synchronized</strong>具体是怎么工作的？有没有更好方法来实现线程安全？我“解剖”下Runtime里关于 <strong>@synchronized</strong>的源码，发现了这些：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">objc_sync_enter</span><br><span class="line">objc_exception_try_enter</span><br><span class="line">setjmp</span><br><span class="line">objc_exception_extract</span><br><span class="line"></span><br><span class="line">my actual code</span><br><span class="line"></span><br><span class="line">objc_exception_try_exit</span><br><span class="line">objc_sync_exit</span><br><span class="line">...</span><br><span class="line">objc_exception_throw</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
-<p>由此可以看出，共享资源外一个很简单 <strong>@synchronized</strong> 其实做了大量的初始化和内存销毁操作。在这种情况下，我们不考虑异常安全，通过<a href="http://developer.apple.com/documentation/Cocoa/Conceptual/ObjectiveC/Articles/chapter_4_section_9.html" target="_blank" rel="external"> Objective-C documentation on exception handling and thread synchronization </a>, 我们知道<strong>@synchronized</strong>不但会做加锁操作，而且这个锁还是一个对这种特殊用法有害的递归锁。</p>
-<p>在<a href="http://www.opensource.apple.com/darwinsource/10.4.7.ppc/objc4-267.1/runtime/objc-sync.m" target="_blank" rel="external"> code (ADC registration required) </a> 中看到 <code>objc_sync_enter</code> 和 <code>objc_sync_exit</code> 具体实现，我们不难看到在每个 <code>@synchronized(foo)</code> ，事实上都要建立3个加锁/解锁序列， 叫<code>id2data</code>的<code>objc_sync_enter</code>，负责从系统中取锁，并给 <code>foo</code> 加锁。序列 <code>objc_sync_exit</code> 也叫id2data,负责给<code>foo</code>解锁。而<code>id2data</code>本身内部数据结构为了安全地得到与<code>foo</code>联系的锁也必须进行加锁和解锁操作。</p>
-<p>我们需要一个更好的办法。 该到返璞归真的时候了，甩走 <code>@synchronized</code> 调用，封装一个我们自己的 <code>pthread</code> 来代替：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">+(id)fooFerBar:(id)bar &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> mtx = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_lock(&amp;mtx)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"lock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">static</span> NSDictionary *foo = nil;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [NSDictionary dictionaryWithObjects:...];</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_unlock(&amp;mtx) != <span class="number">0</span>)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"unlock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>虽然看起来很丑，但是在性能上已经有了重大的提升，达到了我们期望的结果。看上面的代码，我们已经很好的避免了异常阻塞，两个访问锁，和一坨乱七八糟的辅助代码。</p>
-<p>至此，我们已经实现了我们代码更快的目标，并且它们运行得还不错，但是，还有没有其他更简洁的办法了呢？毕竟如果代码更简洁，也就意味着会有更少的隐藏bug。</p>
-
-          
+          <p>来自谷歌Mac团队，主要介绍 <strong>@synchronized</strong>代码块被编译后是如何工作的，使用之后会付出哪些代价，以及如何避免使用 <strong>@synchronized</strong> 来实现高性能的线程安全。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/24/12-SynchronizedSwimming/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -473,40 +466,13 @@
 
       
         
-          
-            <h2 id="安装Node-js时，提示-nvm-command-not-found"><a href="#安装Node-js时，提示-nvm-command-not-found" class="headerlink" title="安装Node.js时，提示 nvm: command not found"></a>安装Node.js时，提示 <strong>nvm: command not found</strong></h2><p>解决办法是： 执行 nvm 命令前，先执行 <code>source ~/.nvm/nvm.sh</code> 命令。载入配置命令使nvm命令生效。</p>
-<p>可以把 <code>source ~/.nvm/nvm.sh</code> 命令 写进 <code>~/.profile</code> 或者 <code>~/.bashrc</code> 文件中, 下次打开Terminal 时会自动执行这个命令。 </p>
-<p>有可能 <code>~/.profile</code> 文件不存在（比如新安装系统的电脑），使用 </p>
-<blockquote>
-<p>touch ~/.profile<br>open -e !$ </p>
-</blockquote>
-<p>创建并打开，粘贴完保存就可以了。 对没错，<code>~/.profile</code> 文件一般就是用来设置环境变量的地方。</p>
-<p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/16904658/node-version-manager-install-nvm-command-not-found" target="_blank" rel="external">Node Version Manager install - nvm command not found </a><br>[2]: <a href="http://superuser.com/questions/473087/cant-find-profile-file-in-os-x" target="_blank" rel="external">Can’t find .profile file in OS X </a></p>
-<h2 id="Terminal-格式化-JSON"><a href="#Terminal-格式化-JSON" class="headerlink" title="Terminal 格式化 JSON"></a>Terminal 格式化 JSON</h2><p>方法1：</p>
-<blockquote>
-<p>echo ‘{“foo”: “lorem”, “bar”: “ipsum”}’ | python -m json.tool</p>
-</blockquote>
-<p>方法2(如果在文件里)：</p>
-<blockquote>
-<p>python -m json.tool my_json.json</p>
-</blockquote>
-<p>Terminal 里查看结果：<br><img src="http://ww3.sinaimg.cn/large/8c0dc373jw1f55hls0bp0j20us0l4agc.jpg" alt=""></p>
-<p>参考链接：<br>[1]: <a href="http://stackoverflow.com/questions/352098/how-can-i-pretty-print-json" target="_blank" rel="external">How can I pretty-print JSON? </a></p>
-<h2 id="Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods"><a href="#Cocoapods-dyld-Library-not-loaded-rpath-Pods-framework-Pods" class="headerlink" title="[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods"></a>[Cocoapods]dyld: Library not loaded: @rpath/Pods.framework/Pods</h2><p>使用Cocoapods管理依赖，用真机运行时，控制台打印：</p>
-<blockquote>
-<p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
-</blockquote>
-<p>Step 1:</p>
-<blockquote>
-<p>disable bit code</p>
-</blockquote>
-<p>Step 2:</p>
-<blockquote>
-<p>The issue was the Pods.framework was set to required and not optional. It wasn’t being copied to device by the .sh script and so the app crashed. Setting this to optional fixed the issue.<br><img src="https://cloud.githubusercontent.com/assets/1169297/7726958/9156c376-fefd-11e4-90c8-2412f67f52c2.png" alt=""></p>
-</blockquote>
-<p>参考链接：<br>[1]: <a href="https://github.com/CocoaPods/CocoaPods/issues/3586" target="_blank" rel="external">CocoaPods issue#3586 </a><br>[2]: <a href="http://stackoverflow.com/questions/30053144/dyld-library-not-loaded-with-cocoapods-0-37-and-xcode-6-3/30166310#30166310" target="_blank" rel="external">The solution on sack overflow </a></p>
-
-          
+          <h2 id="安装Node-js时，提示-nvm-command-not-found"><a href="#安装Node-js时，提示-nvm-command-not-found" class="headerlink" title="安装Node.js时，提示 nvm: command not found"></a>安装Node.js时，提示 <strong>nvm: command not found</strong></h2><p>解决办法是： 执行 nvm 命令前，先执行 <code>source ~/.nvm/nvm.sh</code> 命令。载入配置命令使nvm命令生效。</p>
+<p>可以把 <code>source ~/.nvm/nvm.sh</code> 命令 写进 <code>~/.profile</code> 或者 <code>~/.bashrc</code> 文件中, 下次打开Terminal 时会自动执行这个命令。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/22/11-25thWeekDevTips/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -632,18 +598,12 @@
 
       
         
-          
-            <h2 id="误解"><a href="#误解" class="headerlink" title="误解"></a>误解</h2><p>一开始我们都认为 <strong>noatomic</strong> 非原子性，其修饰的属性是非线程安全的，而 <strong>atomic</strong>原子性修饰的属性是线程安全。其实事实并非如此。<br>被<strong>atomic</strong>修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:</p>
-<h2 id="从源码着手"><a href="#从源码着手" class="headerlink" title="从源码着手"></a>从源码着手</h2><p>对于一个没有自定义setter方法的属性，编译后编译器会生成一个 <code>objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)</code> 的调用，源码在下面：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setProperty</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SUPPORT_GC</span></span><br><span class="line">    (UseGC ? objc_setProperty_gc : objc_setProperty_non_gc)</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    objc_setProperty_non_gc</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        (self, _cmd, offset, newValue, atomic, shouldCopy);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">PRIVATE_EXTERN <span class="keyword">void</span> <span class="title">objc_setProperty_non_gc</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Retain release world</span></span><br><span class="line">    id oldValue, *slot = (id*) ((<span class="keyword">char</span>*)self + offset);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// atomic or not, if slot would be unchanged, do nothing.</span></span><br><span class="line">    <span class="keyword">if</span> (!shouldCopy &amp;&amp; *slot == newValue) <span class="keyword">return</span>;</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">if</span> (shouldCopy) &#123;</span><br><span class="line">        newValue = (shouldCopy == OBJC_PROPERTY_MUTABLECOPY ? [newValue mutableCopyWithZone:<span class="literal">NULL</span>] : [newValue copyWithZone:<span class="literal">NULL</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newValue = objc_retain(newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!atomic) &#123;</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">spin_lock_t</span> *slotlock = &amp;PropertyLocks[GOODHASH(slot)];</span><br><span class="line">        _spin_lock(slotlock);</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;        </span><br><span class="line">        _spin_unlock(slotlock);        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    objc_release(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>源码的方法命名有点不习惯，但是也并不会影响理解，第23行有个是否使用<strong>atomic</strong>修饰的判断，我们看else中的代码。</p>
-<p>从使用PropertyLocks数组中的一个给写操作上锁，在赋完值之后进行解锁操作。</p>
-<p>也就是说，<strong>atomic</strong>只是在 setter方法 中加锁，当多个线程同时写操作时，要进行排队。A线程对属性进行写操作，B线程不可以对该属性进行写操作，只有等A线程访问结束，B线程才能操作。问题在于，当A线程再想对属性进行读操作，读取的是B线程写的数据，这就破坏了线程安全,。如果再有C线程在A线程读操作前Release这个属性，那么程序就会Crash.<br>综上，<strong>atomic</strong> 操作是原子性的，它只保证了属性的setter和getter时的线程安全，并不能保证属性线程安全，<strong>atomic</strong>的使用只是更好的降低的线程出错的可能性。</p>
-<h2 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h2><p>那么问题来了，Apple为什么只给setter和getter方法加锁而不直接使用<strong>@synchronized</strong>加锁呢？<br>看看 <strong>synchronized</strong> 操作的<a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">源码</a>， 简单的一个注解，其实做了许多事情，每个<strong>@synchronized()</strong>代码块，使用了 objc_sync_enter、objc_sync_exit和id2data三个加解锁序列，而这种作法相比使用一个<strong>atomic</strong>来修饰，只给setter、getter方法加锁的方式 在性能上要慢很多。读写操作一个属性时，通常需要很快来完成，<strong>atomic</strong>的方式要适合这项工作。</p>
-<p>在必要时，可以使用<strong>@synchronized</strong>，但是在保证多线程操作在发生错误的时候，不会发生dead lock。</p>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p>[1]:  <a href="http://www.cnblogs.com/xuanhun/archive/2012/01/01/2309571.html" target="_blank" rel="external">Hash碰撞与拒绝服务攻击 </a><br>[2]:  <a href="http://opensource.apple.com/source/objc4/objc4-493.9/runtime/Accessors.subproj/objc-accessors.m" target="_blank" rel="external">Source code of objc-accessors.m file </a><br>[3]:  <a href="http://www.jianshu.com/p/e7e44dfb1d2b" target="_blank" rel="external">iOS多线程开发－线程安全 </a><br>[4]:  <a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">Source code of @synchronized </a><br>[5]:  <a href="http://googlemac.blogspot.sg/2006/10/synchronized-swimming.html" target="_blank" rel="external">Synchronized-swimming </a><br>[6]:  <a href="http://objccn.io/issue-2-4/" target="_blank" rel="external">线程安全类的设计 </a><br>[7]:  <a href="http://m.blog.csdn.net/article/details?id=49687215" target="_blank" rel="external">atomic一定是线程安全的吗？ </a></p>
-
-          
+          <h2 id="误解"><a href="#误解" class="headerlink" title="误解"></a>误解</h2><p>一开始我们都认为 <strong>noatomic</strong> 非原子性，其修饰的属性是非线程安全的，而 <strong>atomic</strong>原子性修饰的属性是线程安全。其实事实并非如此。<br>被<strong>atomic</strong>修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/20/10-OCatomicThreadSafety/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -711,6 +671,25 @@
           </span>
 
           
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
 
           
             
@@ -750,78 +729,12 @@
 
       
         
-          
-            <h2 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h2><p>今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢失，那么Activity之间传值就会出现问题。</p>
-<p>其实Gson中提供了<strong>@Expose</strong>注解来解决这个问题，除此之外还有三种，归纳起来共分三类，今天我们一起研究研究它们各自的作用。</p>
-<h2 id="Control-Exposure"><a href="#Control-Exposure" class="headerlink" title="Control Exposure"></a>Control Exposure</h2><p><strong>@Expose</strong> 注解提供了一个更好的解决文章开头问题方案，</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Expose;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">People</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String objectId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">true</span>, deserialize = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String sex;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Expose</span>(serialize = <span class="keyword">false</span>, deserialize = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Date updateDate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Setter and Getter Methods removed for brevity</span></span><br><span class="line"></span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(<span class="string">"objectId="</span>).append(getObjectId()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"name="</span>).append(getName()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"sex="</span>).append(getSex()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"age="</span>).append(getAge()).append(<span class="string">"\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"updateDate="</span>).append(getUpdateDate()).append(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>@Expose</strong> 注解有两个element: <strong>serialize</strong> 、<strong>deserialize</strong>，分别控制属性的可序列化和可反序列化，参照上面代码的例子，我新增加一个表帮助理解。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Field</th>
-<th style="text-align:center">Serialise</th>
-<th style="text-align:center">deserialize</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">@Expose(serialize = false, deserialize = false)</td>
-<td style="text-align:center">false</td>
-<td style="text-align:center">false</td>
-</tr>
-<tr>
-<td style="text-align:center">@Expose</td>
-<td style="text-align:center">true</td>
-<td style="text-align:center">true</td>
-</tr>
-<tr>
-<td style="text-align:center">@Expose(serialize = true, deserialize = false)</td>
-<td style="text-align:center">true</td>
-<td style="text-align:center">false</td>
-</tr>
-<tr>
-<td style="text-align:center">@Expose(serialize = false, deserialize = true)</td>
-<td style="text-align:center">false</td>
-<td style="text-align:center">true</td>
-</tr>
-<tr>
-<td style="text-align:center">不写</td>
-<td style="text-align:center">false</td>
-<td style="text-align:center">false</td>
-</tr>
-</tbody>
-</table>
-<p>只给属性加上@Expose注解还是不够的，另外需要在得到Gson实例时做一项设置：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> GsonBuilder builder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">builder.excludeFieldsWithoutExposeAnnotation();</span><br><span class="line"><span class="keyword">final</span> Gson gson = builder.create();</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>第二行代码如果没有写，和没加@Expose注解时一样的效果。</p>
-</blockquote>
-<h3 id="Expose注解示例"><a href="#Expose注解示例" class="headerlink" title="@Expose注解示例"></a>@Expose注解示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">People people = <span class="keyword">new</span> People();</span><br><span class="line">    people.setObjectId(<span class="string">"1"</span>);</span><br><span class="line">    people.setAge(<span class="number">18</span>);</span><br><span class="line">    people.setName(<span class="string">"XiaoMing"</span>);</span><br><span class="line">    people.setSex(<span class="string">"男"</span>);</span><br><span class="line">    people.setUpdateDate(<span class="keyword">new</span> Date());</span><br><span class="line"></span><br><span class="line">    GsonBuilder gsonBuilder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">    gsonBuilder.excludeFieldsWithoutExposeAnnotation();</span><br><span class="line"></span><br><span class="line">    Gson gson = gsonBuilder.create();</span><br><span class="line">    String jsonStr = <span class="keyword">new</span> Gson().toJson(people);</span><br><span class="line"></span><br><span class="line">    People p = gson.fromJson(jsonStr, People.class);</span><br><span class="line"></span><br><span class="line">     String logStr = <span class="string">"Java 实例：\n"</span> + people + <span class="string">"\n不加注解时的JSON:\n"</span> + jsonStr + <span class="string">"\n\n加注解后的JSON:\n"</span> + gson.toJson(people) + <span class="string">"\n\n加注解后进行反序列化:\n"</span> + p;</span><br><span class="line">    Log.d(MainActivity.class.getSimpleName() + <span class="string">"--&gt; "</span>, logStr);</span><br><span class="line">    tvResults.setText(logStr);</span><br></pre></td></tr></table></figure>
-<p>控制台打印出Log:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Java 实例：</span><br><span class="line">objectId=1</span><br><span class="line">name=XiaoMing</span><br><span class="line">sex=男</span><br><span class="line">age=18</span><br><span class="line">updateDate=Sat Mar 26 19:03:55 GMT+08:00 2016</span><br><span class="line"></span><br><span class="line">不加注解时的JSON:</span><br><span class="line">&#123;&quot;age&quot;:18,&quot;name&quot;:&quot;XiaoMing&quot;,&quot;objectId&quot;:&quot;1&quot;,&quot;sex&quot;:&quot;男&quot;,&quot;updateDate&quot;:&quot;Mar 26, 2016 7:03:55 PM&quot;&#125;</span><br><span class="line"></span><br><span class="line">加注解后的JSON:</span><br><span class="line">&#123;&quot;name&quot;:&quot;XiaoMing&quot;,&quot;sex&quot;:&quot;男&quot;&#125;</span><br><span class="line"></span><br><span class="line">加注解后进行反序列化:</span><br><span class="line">objectId=null</span><br><span class="line">name=XiaoMing</span><br><span class="line">sex=null</span><br><span class="line">age=18</span><br><span class="line">updateDate=null</span><br></pre></td></tr></table></figure></p>
-<p>objectId, sex的@Expose注解的deserialize为false, updateDate并没有加注解，根据上文的表格，它的serialize和deserialize都为false，所以在反序列化时被忽略，最后值为null.</p>
-<h3 id="Expose注解总结"><a href="#Expose注解总结" class="headerlink" title="@Expose注解总结"></a>@Expose注解总结</h3><p><em>Gson提供的@Expose注解，可以我开发人员很方便控制Model中的属性是否支持 序列化和反序列化。
-</em>注意要使@Expose注解起作用，需要通过GsonBuilder进行创建，并且GsonBuilder实例要设置为excludeFieldsWithoutExposeAnnotation。<br>*属性没有用@Expose修饰，Gson无论在序列化还是反序列化时都会将其忽略。</p>
-<h2 id="Version"><a href="#Version" class="headerlink" title="Version"></a>Version</h2><p>Gson 提供 <strong>@Since</strong>和<strong>@Until</strong> 注解，进行Model类序列化和反序列化的版本控制。<strong>@Since</strong>和<strong>@Until</strong> 是两个相反的意义,他们都有一个double型参数。 Show my code:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Since;</span><br><span class="line"><span class="keyword">import</span> com.google.gson.annotations.Until;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Until</span>(<span class="number">0.3</span>)</span><br><span class="line">    <span class="keyword">private</span> String stNo;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Since</span>(<span class="number">0.4</span>)</span><br><span class="line">    <span class="keyword">private</span> String studentNo;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> score;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(<span class="string">"stNo="</span>).append(getStNo()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"studentNo="</span>).append(getStudentNo()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"name="</span>).append(getName()).append(<span class="string">",\n"</span>);</span><br><span class="line">        sb.append(<span class="string">"score="</span>).append(getScore()).append(<span class="string">",\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Setter and Getter Methods removed for brevity</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>@Until(0.3) GsonBuilder指定的版本小于0.3(不包含)，Gson才会解析这个属性，大于则忽略。<br>@Since(0.4) GsonBuilder指定的版本大于0.4(包含)，Gson都会解析这个属性，小于则忽略。</p>
-</blockquote>
-<h3 id="Version示例"><a href="#Version示例" class="headerlink" title="Version示例"></a>Version示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Student student = <span class="keyword">new</span> Student();</span><br><span class="line">student.setName(<span class="string">"HanMeiMei"</span>);</span><br><span class="line">student.setScore(<span class="number">60</span>);</span><br><span class="line">student.setStNo(<span class="string">"001"</span>);</span><br><span class="line">student.setStudentNo(<span class="string">"001"</span>);</span><br><span class="line"></span><br><span class="line">GsonBuilder gsonBuilder = <span class="keyword">new</span> GsonBuilder();</span><br><span class="line">String versionStr;</span><br><span class="line"><span class="keyword">if</span> (switchFlag &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    gsonBuilder.setVersion(<span class="number">0.2</span>);</span><br><span class="line">    versionStr = <span class="string">"0.2"</span>;</span><br><span class="line">    ((Button)view).setText(<span class="string">"Version 0.4"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    versionStr = <span class="string">"0.4"</span>;</span><br><span class="line">    gsonBuilder.setVersion(<span class="number">0.4</span>);</span><br><span class="line">    ((Button)view).setText(<span class="string">"Version 0.2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">switchFlag *= -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">Gson gson = gsonBuilder.create();</span><br><span class="line"></span><br><span class="line">String jsonStr = <span class="string">"Student实例的各属性值：\n"</span> + student + <span class="string">"\n不加注解的JSON:\n"</span> + <span class="keyword">new</span> Gson().toJson(student) + <span class="string">"\n\n"</span> + versionStr + <span class="string">" 版本JSON:\n"</span> + gson.toJson(student);</span><br><span class="line"></span><br><span class="line">tvResults.setText(jsonStr);</span><br></pre></td></tr></table></figure>
-<p>版本0.2 的JSON:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"name"</span>:<span class="string">"HanMeiMei"</span>,<span class="attr">"score"</span>:<span class="number">60</span>,<span class="attr">"stNo"</span>:<span class="string">"001"</span>&#125;</span><br></pre></td></tr></table></figure></p>
-<p>版本0.4 的JSON:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"name"</span>:<span class="string">"HanMeiMei"</span>,<span class="attr">"score"</span>:<span class="number">60</span>,<span class="attr">"studentNo"</span>:<span class="string">"001"</span>&#125;</span><br></pre></td></tr></table></figure></p>
-<p>version为0.2时 studentNo被忽略<br>version为0.4时 stNo被忽略</p>
-<h3 id="Version-总结"><a href="#Version-总结" class="headerlink" title="Version 总结"></a>Version 总结</h3><ul>
-<li>需要GsonBuilder的实例指定版本号<strong>@Until</strong>和<strong>@Since</strong>才会起作用。</li>
-<li>@Until(0.3) 并不包含0.3</li>
-</ul>
-<h2 id="SerializedName"><a href="#SerializedName" class="headerlink" title="SerializedName"></a>SerializedName</h2><p><strong>@SerializedName</strong>注解使用比较多的场景是当后端返回JSON中的名称与我们定义的Model类不一致时的情况。<br>比如 下面的示例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.annotations.SerializedName;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SerializedName</span>(<span class="string">"brandName"</span>)</span><br><span class="line">    <span class="keyword">private</span> String brand;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String engineModel;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"name="</span>+getName()+<span class="string">"\nengineModel="</span>+getEngineModel();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//Setter and getter methods removed for brevity</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>对于Car这个类中的表示品牌名字属性，本地字义为 brand , 后端字义为brandName，对于这种情况，使用<strong>@SerializedName</strong>注解可以实现本地和后端兼容。<br><strong>@SerializedName</strong>的一个字符串参数，为序列化为JSON后的属性名称。</p>
-<h3 id="SerializedName示例"><a href="#SerializedName示例" class="headerlink" title="SerializedName示例"></a>SerializedName示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car car = <span class="keyword">new</span> Car();</span><br><span class="line">   car.setBrand(<span class="string">"BMW"</span>);</span><br><span class="line">   car.setEngineModel(<span class="string">"bt7320xe"</span>);</span><br><span class="line"></span><br><span class="line">   String jsonStr = <span class="string">"Car实例中各属性的值：\n"</span> + car + <span class="string">"\n\n加注解后JSON:\n"</span> + <span class="keyword">new</span> Gson().toJson(car);</span><br><span class="line">   tvResults.setText(jsonStr);</span><br></pre></td></tr></table></figure>
-<p>Log</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Car实例中各属性的值：</span><br><span class="line">brand=BMW</span><br><span class="line">engineModel=bt7320xe</span><br><span class="line"></span><br><span class="line">加注解后JSON:</span><br><span class="line">&#123;&quot;brandName&quot;:&quot;BMW&quot;,&quot;engineModel&quot;:&quot;bt7320xe&quot;&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p><a href="https://github.com/pandaApe/GsonAnnotationDemo" target="_blank" rel="external">Demo 地址</a><br><a href="http://www.javacreed.com/gson-annotations-example/" target="_blank" rel="external">Gson Annotations Example</a><br><a href="https://github.com/google/gson" target="_blank" rel="external">Gson GitHub</a></p>
-
-          
+          <h2 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h2><p>今天做一个Android项目发现一个需求，本地的Java Object需要用Gson转成JSON，并保存到服务器,而其中一些只用以在本地数据库中作用的Field，比如数据库主键id，更新时间LastUpdateDate,并不想变成JSON。 当然你可能会说用Java 语言关键字transient啊，可是使用transient修饰后的变量是不会被序列化和反序列化的，也就是说这些变量，会在传输中丢失，那么Activity之间传值就会出现问题。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/03/25/9-TheAnnotationOfGson/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -947,31 +860,13 @@
 
       
         
-          
-            <p>我们的代码里出现中文汉字，基本上是因为项目时间紧，为了快速开发，先Hard Code 代码里。</p>
+          <p>我们的代码里出现中文汉字，基本上是因为项目时间紧，为了快速开发，先Hard Code 代码里。</p>
 <p>但是后期项目要进行国际化，必须要把汉字替换回来。然而如果一个一个地找然后替换，费时又费力，即使再仔细，也难免会有漏网之鱼。</p>
-<p>懒人总有懒方法。—在搜索框里使用正则表达式</p>
-<p><strong>Xcode:</strong></p>
-<blockquote>
-<ol>
-<li>打开”Find Navigator” , 快捷键 Command+Shift+F</li>
-<li>切换搜索模式到 “Find &gt; Regular Expression”</li>
-<li>输入    <strong><code>&quot;[^&quot;]*[\u4E00-\u9FA5]+[^&quot;\n]*?&quot;</code></strong> </li>
-</ol>
-</blockquote>
-<p><img src="http://ww1.sinaimg.cn/large/8c0dc373gw1f1d01ytrmsj20b409wq4h.jpg" alt=""></p>
-<p><strong>Android Studio:</strong></p>
-<blockquote>
-<ol>
-<li>使用快捷键 Command+Shift+F 打开</li>
-<li>勾选 Regular expression 复选框</li>
-<li>输入   <strong><code>&quot;[^&quot;]*[\u4E00-\u9FA5]+[^&quot;\n]*?&quot;</code></strong></li>
-</ol>
-</blockquote>
-<p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1f1d02r81nzj20b40eb0ub.jpg" alt=""></p>
-<p>重点在于第三步的能找到中文字符的正则表达式。你Get到了么？</p>
-
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/01/04/8-FindOutCNCharacters/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1097,20 +992,12 @@
 
       
         
-          
-            <p>##<br>最近用Swift重写了一个自定义控件（源码已经上传到Github了，点<a href="https://github.com/pandaApe/HLPlaceHolderView" target="_blank" rel="external">这里</a>），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">addPlaceholderTapTarget</span><span class="params">(target:AnyObject!, andAction action:Selector)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.target = target</span><br><span class="line">    <span class="keyword">self</span>.action = action</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//定义点击手势</span></span><br><span class="line">    tapGesture = <span class="type">UITapGestureRecognizer</span>(target: <span class="keyword">self</span>, action: <span class="string">"handleTapAction"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> tapGesture != <span class="literal">nil</span>&#123;</span><br><span class="line">        iconImgView.removeGestureRecognizer(tapGesture!)</span><br><span class="line">        msgLabel.removeGestureRecognizer(tapGesture!)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    iconImgView.addGestureRecognizer(tapGesture!)</span><br><span class="line">    iconImgView.userInteractionEnabled = <span class="literal">true</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此方法是私有的,不显露给外面</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">handleTapAction</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">self</span>.startAnimating()</span><br><span class="line">    target.performSelector(action)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本以为这样写没有问题的，结果一跑起来，抛错了：( </p>
-<blockquote>
-<p>-[HLPlaceholderViewDemo.HLPlaceholderView handleTapAction]: unrecognized selector sent to instance 0x7fc94973d470<br><em>*</em> Terminating app due to uncaught exception ‘NSInvalidArgumentException’, reason: ‘-[HLPlaceholderViewDemo.HLPlaceholderView handleTapAction]: unrecognized selector sent to instance 0x7fc94973d470’</p>
-</blockquote>
-<p>说这个类里面并没有func handleTapAction()这个方法，仔细一想猜测了一下原因大概是：手势类内部使用KVO调用这个Action,然而func handleTapAction()方法是private，在编译时候，不会当成公有方法，因此在KVO调用时候，就会找不到这个方法，接着就会抛错</p>
-<p>Google一下，于是在这位大神这里发现的解决方法<a href="https://thatthinginswift.com/gesture-recognizers-swift/" target="_blank" rel="external">Gesture Recognizers</a>——在private方法前加上@objc修饰符</p>
-<p>虽然解决了问题，但是依然有点不明不白的。顺着大神的思路，顺便查了查Apple官方的《Using Swift with Cocoa and Objective-C》，不查不知道一查吓一跳，原来@objc背后还有这么多说明。</p>
-<p>其中找了几段能说明一下：</p>
-<h2 id="Swift的类型兼容性"><a href="#Swift的类型兼容性" class="headerlink" title="Swift的类型兼容性"></a>Swift的类型兼容性</h2><p>创建一个Swift的类，如果继承自OC的类，那么这个类的成员，包括属性、方法、下标、构造方法，都自动与OC兼容，可以在OC代码中直接调用。但是有些情况是这个Swift类没有继承OC的类，或者你想修改调用的方法名等，你就需要使用@objc修饰符了。</p>
-
-          
+          <p>最近用Swift重写了一个自定义控件（源码已经上传到Github了，点<a href="https://github.com/pandaApe/HLPlaceHolderView">这里</a>），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/12/10/7-SwiftTypeCompatibilityObjc/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1236,13 +1123,12 @@
 
       
         
-          
-            <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
-<p>使用可选绑定（optional binding）来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量.<br>单个可选绑定我们这样用：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>? </span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 如果是多个,就用逗号隔开，第一个之后let可以省略，默认是let<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>?</span><br><span class="line"><span class="keyword">var</span> str2:<span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"-"</span></span><br><span class="line">str2 = <span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1, s2 = str2&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1 + s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意：<em>多个可选绑定之间是“并且”（&amp;&amp;）关系，如果有一个可选变量没有值，则整个条件语句的结果为false.</em></p>
-
-          
+          <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/12/05/6-OptionalBindingMulti-values/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1368,23 +1254,12 @@
 
       
         
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方案.</p>
-<h2 id="使用Self-Sizing-Cells-的正确姿势"><a href="#使用Self-Sizing-Cells-的正确姿势" class="headerlink" title="使用Self-Sizing Cells 的正确姿势"></a>使用Self-Sizing Cells 的正确姿势</h2><p>要满足下面三个条件：</p>
-<ul>
-<li>Tableview 的cell 要使用 autolayout 约束</li>
-<li>指定Tableview的estimatedRowHeight属性的值</li>
-<li>设置Tableview的rowHeight为UITableviewAutomaticDimension</li>
-</ul>
-<p>用代码表示后面两点就是这样：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">self</span>.tableview.estimatedRowHeight = <span class="number">40</span></span><br><span class="line"><span class="keyword">self</span>.tableview.rowHeight = <span class="type">UITableviewAutomaticDimension</span></span><br></pre></td></tr></table></figure>
-<p>仅仅用AutoLayout+两行代码，你再也不需要实现<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">CGFloat</span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">CGFloat</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="Demonstrate-It"><a href="#Demonstrate-It" class="headerlink" title="Demonstrate It!"></a>Demonstrate It!</h2><p>1.在Storyboard 上拖一个UITableviewController在Tableview 中我们加入一个自定义的cell, cell 中有用户头像ImageView，名字Label，和地址Label,把地址Label的lines值设置为0，让label高度可以随内容自动增加。<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg" alt=""><br>2.添加Autolayout约束，这一步相当重要。我这里使用了固定底部间距，使Superview能有确定的高度。<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4a8r42vj21kw0mvq9y.jpg" alt=""></p>
-<p>分析：头像UIImageview顶部距Superview的固定，名字UILabel和imageview的顶部Margin相等，名字UILabel的高度固定，地址Label的高度和底部Margin固定，因此superview的高度就能根据子View高度的变化而变化了。那么在这个Demo中，地址的Label内容越多，高度值就会越大，从而Cell的调度变会越大。<br>3.代码：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ViewController</span>: <span class="title">UITableViewController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> dataArray:[(avatar:<span class="type">UIImage</span>,userName:<span class="type">String</span>,address:<span class="type">String</span>)]!</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line">        dataArray = <span class="type">Array</span>()</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>...<span class="number">10</span>&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">var</span> addressStr = <span class="string">""</span></span><br><span class="line">            <span class="keyword">for</span> <span class="number">_</span> <span class="keyword">in</span> <span class="number">0</span>...i&#123;</span><br><span class="line">                addressStr += <span class="string">"Apple Inc. 1 Infinite Loop Cupertino, CA 95014 408-996-1010. "</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">let</span> item = (<span class="type">UIImage</span>(named: <span class="string">"<span class="subst">\(i%<span class="number">6</span>)</span>"</span>)!,<span class="string">"User-<span class="subst">\(i)</span>"</span>,addressStr)</span><br><span class="line">            dataArray.append(item)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">self</span>.tableView.rowHeight = <span class="type">UITableViewAutomaticDimension</span></span><br><span class="line">        <span class="keyword">self</span>.tableView.estimatedRowHeight = <span class="number">70</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">UITableViewCell</span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> dataItem = dataArray[indexPath.row]</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> cell = tableView.dequeueReusableCellWithIdentifier(<span class="string">"msgCell"</span>, forIndexPath: indexPath)</span><br><span class="line">        <span class="keyword">let</span> ivAvatar = cell.viewWithTag(<span class="number">100</span>) <span class="keyword">as</span>! <span class="type">UIImageView</span></span><br><span class="line">        <span class="keyword">let</span> lbUserName = cell.viewWithTag(<span class="number">101</span>) <span class="keyword">as</span>! <span class="type">UILabel</span></span><br><span class="line">        <span class="keyword">let</span> lbAddress = cell.viewWithTag(<span class="number">102</span>) <span class="keyword">as</span>! <span class="type">UILabel</span></span><br><span class="line">        </span><br><span class="line">        ivAvatar.image = dataItem.avatar</span><br><span class="line">        lbUserName.text = dataItem.userName</span><br><span class="line">        lbAddress.text = dataItem.address</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> cell</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, numberOfRowsInSection section: Int)</span></span> -&gt; <span class="type">Int</span> &#123;        <span class="keyword">return</span> dataArray.<span class="built_in">count</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>搞定：<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4e54wfdg208g0f34qp.gif" alt=""></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithSelf-SizingTableViewCells.html" target="_blank" rel="external">Working with Self-Sizing Table View Cells</a></p>
-
-          
+          <p>iOS8中引入了新功能，用较少的代码实现了Cell自动计算高度。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/12/03/5-IOS8SelfSizingCells/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1511,7 +1386,8 @@
       
         
           
-            <p>用真机调试，控制台打印以下log,但是模拟器却没有问题。</p>
+            <!-- -->
+<p>用真机调试，控制台打印以下log,但是模拟器却没有问题。</p>
 <blockquote>
 <p>dyld: Library not loaded: @rpath/Pods.framework/Pods<br>Referenced from: /private/var/mobile/Containers/Bundle/Application/366AF813-0739-48B2-BF1D-5FA6E90A29CA/Fetch.app/Fetch<br>Reason: image not found</p>
 </blockquote>
@@ -1648,18 +1524,12 @@
 
       
         
-          
-            <p>原文地址：<a href="http://codewithchris.com/learning-ios-programming/" target="_blank" rel="external">http://codewithchris.com/learning-ios-programming/</a><br>作者：Chris<br>译文：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">学习IOS编程最好的方法是什么？</span><br></pre></td></tr></table></figure>
-<p>被问过很次这样的问题。写这编文章我想告诉大家，哪些事不该做和我认为学习ios最好的方法。我先来分享一个我第一次学习时失败的例子。</p>
-<h2 id="怎样失败地学习IOS编程"><a href="#怎样失败地学习IOS编程" class="headerlink" title="怎样失败地学习IOS编程"></a>怎样失败地学习IOS编程</h2><p>那时我在一家帮助客户开发客户端应用的咨询公司工作，三年前我被安排到一个开发iPad应用的任务，在那时，激起了我学习ios开发，学习Objective-C的热情，也因此得到报酬。</p>
-<p>我并不担心学习一样新的东西，因为我知道网上有足够的资源。尽管如此，我还是决定买本书来看，因为这是我在学校学习其他编程语言用的方法。我所看的书是：<code>《Beginning iPhone Development by Apress》</code><br><img src="http://codewithchris.wpengine.netdna-cdn.com/img/BeginningiPhoneDevelopment.jpeg" alt=""><br>这本书本身很不错（现在已经过时了），但是我犯的最大的错误就是从头读到尾的过程中并没有通过测试来巩固我学过的知识。你瞅瞅，仗着之前有编程的背景和学习其他语言的经历，让我有了很自信的错觉。我一边读书,一边理解它表达的思想，可当我读完整本书时，我却不知道如何开始做一个应用。</p>
-<p>我知道没有办法能让我记住这本书的全部内容。如果边读边实践，新知识将会有机会沉淀下来成为一种习惯。那么问题来了，这个错误我该怎么挽回？亡羊补劳，我开始看一些在线iPhone编程教程。这条路上，我依然犯了一些错误，但我跨越一道道障碍而变得更好。做过几个项目之后，开发IOS应用已经感觉舒服好多了。如果我一开始伴随着实践和犯错地学习，这要比读完整本书后再开始实践达到熟练程度的速度要快很多。熟悉概念真真是极好的，也许你觉得你能很好地理解，但是最终当你用笔写在纸上（于我们而言，用手指敲键盘）的时候，你就会知道你知识的空白区。问一些足够的问题去学习并提升。</p>
-<h2 id="学习IOS编程最好的方法"><a href="#学习IOS编程最好的方法" class="headerlink" title="学习IOS编程最好的方法"></a>学习IOS编程最好的方法</h2><p>我有编程经验，话虽如此，我确实相信学习任何事最好的方法是尽快行动和犯错误。放弃不断地阅读和看视频的学习方法，将你的知识付诸实践你才能真正认识到你知识中的空白。<br>学习IOS编程也是一样。最好的方法就是打开Xcode,并创建一个HelloWord的Demo。对于一个熟练的程序员来说，运行的时候在屏幕上输出“Hello Word” 只是一个非常简单的事。由此开始，学习如何在屏幕上布局UI控件，如何反馈用户的交互和手势。接着学习怎样添加一个子View到你的应用中，两个View之间如何导航。最后，学习如何使用UITableView控件，你可以在你的程序中一行一行显示可以滑动的数据。到那时，你就会更有信心并取得进步，这些将成为你学习更多知识的资本。不断地尝试学习新东西最大的障碍是，在没有取得进步时灰心并放弃。如果你克服这一点,你就会很快创建一个你自己的应用，你会思考为什么你曾想过放弃！</p>
-<h2 id="Code-With-Chris"><a href="#Code-With-Chris" class="headerlink" title="Code With Chris"></a>Code With Chris</h2><p>我深信实践是学习如何做一个iPhone应用很好的途经。我制作了一些免费的入门视频教程，这些教程都遵循以实践为目的的思想。建议大家看一看，在自己的电脑上继续实践，你会惊讶地发现在没有任何开发经验的前提下你依然能够学到很多！</p>
-<p>戳<a href="http://codewithchris.com/how-to-make-an-iphone-app" target="_blank" rel="external">此处</a>获取视频</p>
-
-          
+          <p>写给刚入行的同学。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/01/3-Translation-LearningIOSProgramming/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1739,7 +1609,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>

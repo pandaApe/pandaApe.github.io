@@ -84,19 +84,16 @@
 
 
 
-<meta name="description" content="##最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下
-1234567891011121314151617181920212223func addPlaceholderTapTarget(target:AnyObject">
+<meta name="description" content="最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift的类型兼容和@Objc修饰符">
 <meta property="og:url" content="https://pandaape.github.io/2015/12/10/7-SwiftTypeCompatibilityObjc/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="##最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下
-1234567891011121314151617181920212223func addPlaceholderTapTarget(target:AnyObject">
-<meta property="og:updated_time" content="2016-03-25T13:42:05.000Z">
+<meta property="og:description" content="最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下">
+<meta property="og:updated_time" content="2016-06-25T05:21:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Swift的类型兼容和@Objc修饰符">
-<meta name="twitter:description" content="##最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下
-1234567891011121314151617181920212223func addPlaceholderTapTarget(target:AnyObject">
+<meta name="twitter:description" content="最近用Swift重写了一个自定义控件（源码已经上传到Github了，点这里），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下">
 
 
 
@@ -333,8 +330,7 @@
       
 
       
-        <p>##<br>最近用Swift重写了一个自定义控件（源码已经上传到Github了，点<a href="https://github.com/pandaApe/HLPlaceHolderView" target="_blank" rel="external">这里</a>），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">addPlaceholderTapTarget</span><span class="params">(target:AnyObject!, andAction action:Selector)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.target = target</span><br><span class="line">    <span class="keyword">self</span>.action = action</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//定义点击手势</span></span><br><span class="line">    tapGesture = <span class="type">UITapGestureRecognizer</span>(target: <span class="keyword">self</span>, action: <span class="string">"handleTapAction"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> tapGesture != <span class="literal">nil</span>&#123;</span><br><span class="line">        iconImgView.removeGestureRecognizer(tapGesture!)</span><br><span class="line">        msgLabel.removeGestureRecognizer(tapGesture!)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    iconImgView.addGestureRecognizer(tapGesture!)</span><br><span class="line">    iconImgView.userInteractionEnabled = <span class="literal">true</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此方法是私有的,不显露给外面</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">handleTapAction</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">self</span>.startAnimating()</span><br><span class="line">    target.performSelector(action)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>最近用Swift重写了一个自定义控件（源码已经上传到Github了，点<a href="https://github.com/pandaApe/HLPlaceHolderView" target="_blank" rel="external">这里</a>），其中有段代码是要在一个internal的方法里给一个ImageView添加点击手势，响应点击事件的方法是调用当前类里面的一个prevate方法。代码如下<br><a id="more"></a><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">addPlaceholderTapTarget</span><span class="params">(target:AnyObject!, andAction action:Selector)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.target = target</span><br><span class="line">    <span class="keyword">self</span>.action = action</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//定义点击手势</span></span><br><span class="line">    tapGesture = <span class="type">UITapGestureRecognizer</span>(target: <span class="keyword">self</span>, action: <span class="string">"handleTapAction"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> tapGesture != <span class="literal">nil</span>&#123;</span><br><span class="line">        iconImgView.removeGestureRecognizer(tapGesture!)</span><br><span class="line">        msgLabel.removeGestureRecognizer(tapGesture!)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    iconImgView.addGestureRecognizer(tapGesture!)</span><br><span class="line">    iconImgView.userInteractionEnabled = <span class="literal">true</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此方法是私有的,不显露给外面</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">handleTapAction</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">self</span>.startAnimating()</span><br><span class="line">    target.performSelector(action)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>本以为这样写没有问题的，结果一跑起来，抛错了：( </p>
 <blockquote>
 <p>-[HLPlaceholderViewDemo.HLPlaceholderView handleTapAction]: unrecognized selector sent to instance 0x7fc94973d470<br><em>*</em> Terminating app due to uncaught exception ‘NSInvalidArgumentException’, reason: ‘-[HLPlaceholderViewDemo.HLPlaceholderView handleTapAction]: unrecognized selector sent to instance 0x7fc94973d470’</p>
@@ -496,7 +492,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
