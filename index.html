@@ -257,6 +257,144 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/24/12-SynchronizedSwimming/" itemprop="url">
+                  【译】@synchronized Swimming
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-06-24T21:25:54+08:00" content="2016-06-24">
+              2016-06-24
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/翻译/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/24/12-SynchronizedSwimming/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/24/12-SynchronizedSwimming/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/06/24/12-SynchronizedSwimming/" class="leancloud_visitors" data-flag-title="【译】@synchronized Swimming">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">visitors </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）</p>
+<p>在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 <strong>@synchronized</strong> ：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="keyword">id</span>)fooFerBar:(<span class="keyword">id</span>)bar &#123;</span><br><span class="line"><span class="keyword">@synchronized</span>(<span class="keyword">self</span>) &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">NSDictionary</span> *foo = <span class="literal">nil</span>;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [<span class="built_in">NSDictionary</span> dictionaryWithObjects:...];</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码里，每次调用 <strong>@synchronized</strong>代码块里的 <code>fooFerBar</code> 方法时无疑都会付出数毫秒的性能代价。为什么呢？我们不可以在 <code>+initialize</code> 创建资源，因为 <code>fooFerBar</code> 是在category里的，当然在caregory里重写 <code>+initialize</code> 也不是一件很nice的事。我们也不能使用 <code>+load</code> 来做，因为其他的类在他们内部的 <code>+load</code> 中可以很容易地调用 <code>fooFerBar</code> ， 并且无法保证有顺序地加载。 因此我们唯一的选择就是尽可能少的使用 <strong>@synchronized</strong>，毕竟我们都不想走进那个既不出名又让人恶心的 <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf" target="_blank" rel="external">double-checked locking anti-pattern </a> 。</p>
+<p>我想知道， <strong>@synchronized</strong>具体是怎么工作的？有没有更好方法来实现线程安全？我“解剖”下Runtime里关于 <strong>@synchronized</strong>的源码，发现了这些：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">objc_sync_enter</span><br><span class="line">objc_exception_try_enter</span><br><span class="line">setjmp</span><br><span class="line">objc_exception_extract</span><br><span class="line"></span><br><span class="line">my actual code</span><br><span class="line"></span><br><span class="line">objc_exception_try_exit</span><br><span class="line">objc_sync_exit</span><br><span class="line">...</span><br><span class="line">objc_exception_throw</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>由此可以看出，共享资源外一个很简单 <strong>@synchronized</strong> 其实做了大量的初始化和内存销毁操作。在这种情况下，我们不考虑异常安全，通过<a href="http://developer.apple.com/documentation/Cocoa/Conceptual/ObjectiveC/Articles/chapter_4_section_9.html" target="_blank" rel="external"> Objective-C documentation on exception handling and thread synchronization </a>, 我们知道<strong>@synchronized</strong>不但会做加锁操作，而且这个锁还是一个对这种特殊用法有害的递归锁。</p>
+<p>在<a href="http://www.opensource.apple.com/darwinsource/10.4.7.ppc/objc4-267.1/runtime/objc-sync.m" target="_blank" rel="external"> code (ADC registration required) </a> 中看到 <code>objc_sync_enter</code> 和 <code>objc_sync_exit</code> 具体实现，我们不难看到在每个 <code>@synchronized(foo)</code> ，事实上都要建立3个加锁/解锁序列， 叫<code>id2data</code>的<code>objc_sync_enter</code>，负责从系统中取锁，并给 <code>foo</code> 加锁。序列 <code>objc_sync_exit</code> 也叫id2data,负责给<code>foo</code>解锁。而<code>id2data</code>本身内部数据结构为了安全地得到与<code>foo</code>联系的锁也必须进行加锁和解锁操作。</p>
+<p>我们需要一个更好的办法。 该到返璞归真的时候了，甩走 <code>@synchronized</code> 调用，封装一个我们自己的 <code>pthread</code> 来代替：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">+(id)fooFerBar:(id)bar &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> mtx = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_lock(&amp;mtx)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"lock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">static</span> NSDictionary *foo = nil;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [NSDictionary dictionaryWithObjects:...];</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_unlock(&amp;mtx) != <span class="number">0</span>)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"unlock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>虽然看起来很丑，但是在性能上已经有了重大的提升，达到了我们期望的结果。看上面的代码，我们已经很好的避免了异常阻塞，两个访问锁，和一坨乱七八糟的辅助代码。</p>
+<p>至此，我们已经实现了我们代码更快的目标，并且它们运行得还不错，但是，还有没有其他更简洁的办法了呢？毕竟如果代码更简洁，也就意味着会有更少的隐藏bug。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/22/11-25thWeekDevTips/" itemprop="url">
                   第26周开发Tips
                 </a>
@@ -1548,137 +1686,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/08/22/2-CostomMenu/" itemprop="url">
-                  自定义 选择内容后 的菜单
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-08-22T16:45:53+08:00" content="2015-08-22">
-              2015-08-22
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/08/22/2-CostomMenu/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/22/2-CostomMenu/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/08/22/2-CostomMenu/" class="leancloud_visitors" data-flag-title="自定义 选择内容后 的菜单">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">visitors </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="微信长按菜单的联想"><a href="#微信长按菜单的联想" class="headerlink" title="微信长按菜单的联想"></a>微信长按菜单的联想</h3><p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1evbu9lnabjj20a00a9dge.jpg" alt=""></p>
-<p>阅读类应用必备的功能有木有。不单是可以加入分享功能，用浏览器搜索，颜色标记选中内容都可以做到撒。</p>
-<h3 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h3><p><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1evbkys8npyj209109gjsh.jpg" alt=""></p>
-<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">super</span>.viewDidload()</span><br><span class="line"></span><br><span class="line">	<span class="comment">//1.自定义选择后的菜单</span></span><br><span class="line">	<span class="keyword">var</span> itemMail = <span class="type">UIMenuItem</span>(title: <span class="string">"邮件分享"</span>, action: <span class="string">"mailShare:"</span>)</span><br><span class="line">	<span class="keyword">var</span> itemWeibo = <span class="type">UIMenuItem</span>(title: <span class="string">"微博分享"</span>, action: <span class="string">"weiboShare:"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//2.取menu实例</span></span><br><span class="line">	<span class="keyword">var</span> menu = <span class="type">UIMenuController</span>.sharedMenuController()</span><br><span class="line">	<span class="comment">//3.增加到menu中</span></span><br><span class="line">	menu.menuItems = [itemMail, itemWeibo]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//点击时的Action</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">weiboShare</span><span class="params">(sender:UIMenuItem)</span></span>&#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"weiboShare:"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mailShare</span><span class="params">(sender:UIMenuItem)</span></span>&#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"mailShare:"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1724,7 +1731,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>

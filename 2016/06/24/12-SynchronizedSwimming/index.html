@@ -84,20 +84,22 @@
 
 
 
-<meta name="description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
+<meta name="description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
+在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
+1234567+(id)f">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS8后使用AutoLayot自动计算Cell高度">
-<meta property="og:url" content="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/index.html">
+<meta property="og:title" content="【译】@synchronized Swimming">
+<meta property="og:url" content="https://pandaape.github.io/2016/06/24/12-SynchronizedSwimming/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
-<meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg">
-<meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4a8r42vj21kw0mvq9y.jpg">
-<meta property="og:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4e54wfdg208g0f34qp.gif">
-<meta property="og:updated_time" content="2016-06-20T17:50:34.000Z">
+<meta property="og:description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
+在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
+1234567+(id)f">
+<meta property="og:updated_time" content="2016-06-25T03:29:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS8后使用AutoLayot自动计算Cell高度">
-<meta name="twitter:description" content="概述在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方">
-<meta name="twitter:image" content="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg">
+<meta name="twitter:title" content="【译】@synchronized Swimming">
+<meta name="twitter:description" content="（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）
+在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 @synchronized ：
+1234567+(id)f">
 
 
 
@@ -118,9 +120,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2016/06/24/12-SynchronizedSwimming/"/>
 
-  <title> iOS8后使用AutoLayot自动计算Cell高度 | PandaApe's Blog </title>
+  <title> 【译】@synchronized Swimming | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -259,7 +261,7 @@
             
             
               
-                iOS8后使用AutoLayot自动计算Cell高度
+                【译】@synchronized Swimming
               
             
           </h1>
@@ -271,8 +273,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-12-03T22:48:34+08:00" content="2015-12-03">
-              2015-12-03
+            <time itemprop="dateCreated" datetime="2016-06-24T21:25:54+08:00" content="2016-06-24">
+              2016-06-24
             </time>
           </span>
 
@@ -285,8 +287,8 @@
               <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
+                  <a href="/categories/翻译/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
                   </a>
                 </span>
 
@@ -301,8 +303,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/03/5-IOS8SelfSizingCells/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/03/5-IOS8SelfSizingCells/" itemprop="commentsCount"></span>
+                <a href="/2016/06/24/12-SynchronizedSwimming/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/24/12-SynchronizedSwimming/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -312,7 +314,7 @@
 
           
           
-             <span id="/2015/12/03/5-IOS8SelfSizingCells/" class="leancloud_visitors" data-flag-title="iOS8后使用AutoLayot自动计算Cell高度">
+             <span id="/2016/06/24/12-SynchronizedSwimming/" class="leancloud_visitors" data-flag-title="【译】@synchronized Swimming">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -334,20 +336,16 @@
       
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在iOS8中，Apple 的UITableView引入了一个新功能，Self-Sizing Cells。这个新东西对开发有什么好处呢？我们知道，在IOS8以前，如果显示一个动态高度的tableview cell，你必须在 tableView:heightForRowAtIndexPath:方法中手动计算Row的高度。现在iOS8中的Self-Sizing Cell 提供一个计算动态高度的解决方案.</p>
-<h2 id="使用Self-Sizing-Cells-的正确姿势"><a href="#使用Self-Sizing-Cells-的正确姿势" class="headerlink" title="使用Self-Sizing Cells 的正确姿势"></a>使用Self-Sizing Cells 的正确姿势</h2><p>要满足下面三个条件：</p>
-<ul>
-<li>Tableview 的cell 要使用 autolayout 约束</li>
-<li>指定Tableview的estimatedRowHeight属性的值</li>
-<li>设置Tableview的rowHeight为UITableviewAutomaticDimension</li>
-</ul>
-<p>用代码表示后面两点就是这样：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">self</span>.tableview.estimatedRowHeight = <span class="number">40</span></span><br><span class="line"><span class="keyword">self</span>.tableview.rowHeight = <span class="type">UITableviewAutomaticDimension</span></span><br></pre></td></tr></table></figure>
-<p>仅仅用AutoLayout+两行代码，你再也不需要实现<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">CGFloat</span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">CGFloat</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="Demonstrate-It"><a href="#Demonstrate-It" class="headerlink" title="Demonstrate It!"></a>Demonstrate It!</h2><p>1.在Storyboard 上拖一个UITableviewController在Tableview 中我们加入一个自定义的cell, cell 中有用户头像ImageView，名字Label，和地址Label,把地址Label的lines值设置为0，让label高度可以随内容自动增加。<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4bg4fbbj21go0v410b.jpg" alt=""><br>2.添加Autolayout约束，这一步相当重要。我这里使用了固定底部间距，使Superview能有确定的高度。<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4a8r42vj21kw0mvq9y.jpg" alt=""></p>
-<p>分析：头像UIImageview顶部距Superview的固定，名字UILabel和imageview的顶部Margin相等，名字UILabel的高度固定，地址Label的高度和底部Margin固定，因此superview的高度就能根据子View高度的变化而变化了。那么在这个Demo中，地址的Label内容越多，高度值就会越大，从而Cell的调度变会越大。<br>3.代码：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ViewController</span>: <span class="title">UITableViewController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> dataArray:[(avatar:<span class="type">UIImage</span>,userName:<span class="type">String</span>,address:<span class="type">String</span>)]!</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line">        dataArray = <span class="type">Array</span>()</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>...<span class="number">10</span>&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">var</span> addressStr = <span class="string">""</span></span><br><span class="line">            <span class="keyword">for</span> <span class="number">_</span> <span class="keyword">in</span> <span class="number">0</span>...i&#123;</span><br><span class="line">                addressStr += <span class="string">"Apple Inc. 1 Infinite Loop Cupertino, CA 95014 408-996-1010. "</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">let</span> item = (<span class="type">UIImage</span>(named: <span class="string">"<span class="subst">\(i%<span class="number">6</span>)</span>"</span>)!,<span class="string">"User-<span class="subst">\(i)</span>"</span>,addressStr)</span><br><span class="line">            dataArray.append(item)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">self</span>.tableView.rowHeight = <span class="type">UITableViewAutomaticDimension</span></span><br><span class="line">        <span class="keyword">self</span>.tableView.estimatedRowHeight = <span class="number">70</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath)</span></span> -&gt; <span class="type">UITableViewCell</span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> dataItem = dataArray[indexPath.row]</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> cell = tableView.dequeueReusableCellWithIdentifier(<span class="string">"msgCell"</span>, forIndexPath: indexPath)</span><br><span class="line">        <span class="keyword">let</span> ivAvatar = cell.viewWithTag(<span class="number">100</span>) <span class="keyword">as</span>! <span class="type">UIImageView</span></span><br><span class="line">        <span class="keyword">let</span> lbUserName = cell.viewWithTag(<span class="number">101</span>) <span class="keyword">as</span>! <span class="type">UILabel</span></span><br><span class="line">        <span class="keyword">let</span> lbAddress = cell.viewWithTag(<span class="number">102</span>) <span class="keyword">as</span>! <span class="type">UILabel</span></span><br><span class="line">        </span><br><span class="line">        ivAvatar.image = dataItem.avatar</span><br><span class="line">        lbUserName.text = dataItem.userName</span><br><span class="line">        lbAddress.text = dataItem.address</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> cell</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(tableView: UITableView, numberOfRowsInSection section: Int)</span></span> -&gt; <span class="type">Int</span> &#123;        <span class="keyword">return</span> dataArray.<span class="built_in">count</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>搞定：<br><img src="http://ww4.sinaimg.cn/large/8c0dc373gw1eyp4e54wfdg208g0f34qp.gif" alt=""></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithSelf-SizingTableViewCells.html" target="_blank" rel="external">Working with Self-Sizing Table View Cells</a></p>
+        <p>（作者按：以往有所不同的是，本文的目标是帮助Mac开发者解惑，如果你不是开发者，可以找一个开发指南，好帮助你了解我们是如何开发软件并使其稳定运行的。）</p>
+<p>在Google，软件性能极其重要。即使是有毫秒级的提升空间，我们也会花大量时间使用性能工具和其他技术去使我们的软件更流畅。正好，最近在看多线程的代码，意识到我们在一份共享资源中错误地使用了 <strong>@synchronized</strong> ：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="keyword">id</span>)fooFerBar:(<span class="keyword">id</span>)bar &#123;</span><br><span class="line"><span class="keyword">@synchronized</span>(<span class="keyword">self</span>) &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">NSDictionary</span> *foo = <span class="literal">nil</span>;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [<span class="built_in">NSDictionary</span> dictionaryWithObjects:...];</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码里，每次调用 <strong>@synchronized</strong>代码块里的 <code>fooFerBar</code> 方法时无疑都会付出数毫秒的性能代价。为什么呢？我们不可以在 <code>+initialize</code> 创建资源，因为 <code>fooFerBar</code> 是在category里的，当然在caregory里重写 <code>+initialize</code> 也不是一件很nice的事。我们也不能使用 <code>+load</code> 来做，因为其他的类在他们内部的 <code>+load</code> 中可以很容易地调用 <code>fooFerBar</code> ， 并且无法保证有顺序地加载。 因此我们唯一的选择就是尽可能少的使用 <strong>@synchronized</strong>，毕竟我们都不想走进那个既不出名又让人恶心的 <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf" target="_blank" rel="external">double-checked locking anti-pattern </a> 。</p>
+<p>我想知道， <strong>@synchronized</strong>具体是怎么工作的？有没有更好方法来实现线程安全？我“解剖”下Runtime里关于 <strong>@synchronized</strong>的源码，发现了这些：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">objc_sync_enter</span><br><span class="line">objc_exception_try_enter</span><br><span class="line">setjmp</span><br><span class="line">objc_exception_extract</span><br><span class="line"></span><br><span class="line">my actual code</span><br><span class="line"></span><br><span class="line">objc_exception_try_exit</span><br><span class="line">objc_sync_exit</span><br><span class="line">...</span><br><span class="line">objc_exception_throw</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>由此可以看出，共享资源外一个很简单 <strong>@synchronized</strong> 其实做了大量的初始化和内存销毁操作。在这种情况下，我们不考虑异常安全，通过<a href="http://developer.apple.com/documentation/Cocoa/Conceptual/ObjectiveC/Articles/chapter_4_section_9.html" target="_blank" rel="external"> Objective-C documentation on exception handling and thread synchronization </a>, 我们知道<strong>@synchronized</strong>不但会做加锁操作，而且这个锁还是一个对这种特殊用法有害的递归锁。</p>
+<p>在<a href="http://www.opensource.apple.com/darwinsource/10.4.7.ppc/objc4-267.1/runtime/objc-sync.m" target="_blank" rel="external"> code (ADC registration required) </a> 中看到 <code>objc_sync_enter</code> 和 <code>objc_sync_exit</code> 具体实现，我们不难看到在每个 <code>@synchronized(foo)</code> ，事实上都要建立3个加锁/解锁序列， 叫<code>id2data</code>的<code>objc_sync_enter</code>，负责从系统中取锁，并给 <code>foo</code> 加锁。序列 <code>objc_sync_exit</code> 也叫id2data,负责给<code>foo</code>解锁。而<code>id2data</code>本身内部数据结构为了安全地得到与<code>foo</code>联系的锁也必须进行加锁和解锁操作。</p>
+<p>我们需要一个更好的办法。 该到返璞归真的时候了，甩走 <code>@synchronized</code> 调用，封装一个我们自己的 <code>pthread</code> 来代替：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">+(id)fooFerBar:(id)bar &#123;</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> mtx = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_lock(&amp;mtx)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"lock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">static</span> NSDictionary *foo = nil;</span><br><span class="line">   <span class="keyword">if</span> (!foo) foo = [NSDictionary dictionaryWithObjects:...];</span><br><span class="line">   <span class="keyword">if</span> (pthread_mutex_unlock(&amp;mtx) != <span class="number">0</span>)) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"unlock failed sigh..."</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">return</span> [foo objectWithKey:bar];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>虽然看起来很丑，但是在性能上已经有了重大的提升，达到了我们期望的结果。看上面的代码，我们已经很好的避免了异常阻塞，两个访问锁，和一坨乱七八糟的辅助代码。</p>
+<p>至此，我们已经实现了我们代码更快的目标，并且它们运行得还不错，但是，还有没有其他更简洁的办法了呢？毕竟如果代码更简洁，也就意味着会有更少的隐藏bug。</p>
 
       
     </div>
@@ -372,17 +370,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/30/4-LibraryNotLoadedCocoaPods/" rel="next" title="真机调试CocoaPods提示LibraryNotLoaded">
-                <i class="fa fa-chevron-left"></i> 真机调试CocoaPods提示LibraryNotLoaded
+              <a href="/2016/06/22/11-25thWeekDevTips/" rel="next" title="第26周开发Tips">
+                <i class="fa fa-chevron-left"></i> 第26周开发Tips
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/05/6-OptionalBindingMulti-values/" rel="prev" title="Swift可选绑定多个可选变量">
-                Swift可选绑定多个可选变量 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -446,8 +440,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/03/5-IOS8SelfSizingCells/"
-           data-title="iOS8后使用AutoLayot自动计算Cell高度" data-url="https://pandaape.github.io/2015/12/03/5-IOS8SelfSizingCells/">
+      <div class="ds-thread" data-thread-key="2016/06/24/12-SynchronizedSwimming/"
+           data-title="【译】@synchronized Swimming" data-url="https://pandaape.github.io/2016/06/24/12-SynchronizedSwimming/">
       </div>
     
   </div>
@@ -558,7 +552,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Self-Sizing-Cells-的正确姿势"><span class="nav-number">2.</span> <span class="nav-text">使用Self-Sizing Cells 的正确姿势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demonstrate-It"><span class="nav-number">3.</span> <span class="nav-text">Demonstrate It!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <p class="post-toc-empty">This post does not have a Table of Contents</p>
             
           </div>
         </section>
