@@ -91,7 +91,7 @@
 <meta property="og:site_name" content="PandaApe's Blog">
 <meta property="og:description" content="最近在找工作，运行时基本上是面试笔试必问的一道题，能考察出面试者对OC这门语言的掌握程度，及其技术深度。当然，与其相类似的问题还有 Runloop, ARC等等。我准备用一个系列来写写OC中的运行时，一方面能让自己有个系统的掌握，另一方面希望我分享出来的东西对大家有所帮助。">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/8c0dc373gw1f6milo3uagg20980f4q32.gif">
-<meta property="og:updated_time" content="2016-08-08T10:33:55.000Z">
+<meta property="og:updated_time" content="2016-08-10T00:57:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="【Objective-C运行时】-消息发送">
 <meta name="twitter:description" content="最近在找工作，运行时基本上是面试笔试必问的一道题，能考察出面试者对OC这门语言的掌握程度，及其技术深度。当然，与其相类似的问题还有 Runloop, ARC等等。我准备用一个系列来写写OC中的运行时，一方面能让自己有个系统的掌握，另一方面希望我分享出来的东西对大家有所帮助。">
@@ -427,6 +427,7 @@
 <li>在OC中，如果向某对象传递消息，那就会使用动态绑定机制来决定需要调用的方法。在底层，所有方法都是普通C语言函数，然而对象收到消息后，究竟该掉哪个方法则完全于运行期决定，甚至可以在程序运行时改变，这些特性使得OC称为一门真正的动态语言。</li>
 <li>在实际编写OC时，开发者应该了解其底层工作原理。代码究竟是如何执行的，而且能理解为何在调试的时候，栈信息中总是出现<strong>objc_msgSend</strong>。</li>
 </ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="http://blog.csdn.net/hherima/article/details/38425605" target="_blank" rel="external"> Effective Objective-C(第11-14条) </a></p>
 
       
     </div>
@@ -458,6 +459,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/28/17-48thWeekDevTips/" rel="prev" title="第48周开发Tips">
+                第48周开发Tips <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -567,7 +572,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-count">15</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
@@ -633,7 +638,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时"><span class="nav-number">1.</span> <span class="nav-text">运行时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息"><span class="nav-number">2.</span> <span class="nav-text">消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#objc-msgSend"><span class="nav-number">3.</span> <span class="nav-text">objc_msgSend</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Class类"><span class="nav-number">4.</span> <span class="nav-text">Class类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息派发流程"><span class="nav-number">5.</span> <span class="nav-text">消息派发流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐藏参数"><span class="nav-number">6.</span> <span class="nav-text">隐藏参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时"><span class="nav-number">1.</span> <span class="nav-text">运行时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息"><span class="nav-number">2.</span> <span class="nav-text">消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#objc-msgSend"><span class="nav-number">3.</span> <span class="nav-text">objc_msgSend</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Class类"><span class="nav-number">4.</span> <span class="nav-text">Class类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息派发流程"><span class="nav-number">5.</span> <span class="nav-text">消息派发流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐藏参数"><span class="nav-number">6.</span> <span class="nav-text">隐藏参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">8.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
           </div>
         </section>
