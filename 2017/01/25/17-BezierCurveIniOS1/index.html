@@ -84,16 +84,32 @@
 
 
 
-<meta name="description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:">
+<meta name="description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用atomic修饰的属性并不会线程安全">
-<meta property="og:url" content="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/index.html">
+<meta property="og:title" content="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
+<meta property="og:url" content="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:">
-<meta property="og:updated_time" content="2016-06-25T05:17:17.000Z">
+<meta property="og:description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-850a7f091b7455ce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-90e77721e06237ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-58a1ab918eb38850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-a2c50c63f8635d91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-502dfb5df51970cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-ee8478efb6f28335.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-82781ddb157c4c6a.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-91de929ee26595f4.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-dc67b41b181260ae.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-9c2ddf60cab67586.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-fc72aea84a7d25f8.gif?imageMogr2/auto-orient/strip">
+<meta property="og:updated_time" content="2017-06-27T14:42:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用atomic修饰的属性并不会线程安全">
-<meta name="twitter:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:">
+<meta name="twitter:title" content="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
+<meta name="twitter:description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
 
@@ -114,9 +130,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/"/>
 
-  <title> 使用atomic修饰的属性并不会线程安全 | PandaApe's Blog </title>
+  <title> iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础 | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -255,7 +271,7 @@
             
             
               
-                使用atomic修饰的属性并不会线程安全
+                iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础
               
             
           </h1>
@@ -267,8 +283,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2016-06-20T21:37:41+08:00" content="2016-06-20">
-              2016-06-20
+            <time itemprop="dateCreated" datetime="2017-01-25T20:29:54+08:00" content="2017-01-25">
+              2017-01-25
             </time>
           </span>
 
@@ -297,8 +313,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/20/10-OCatomicThreadSafety/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/20/10-OCatomicThreadSafety/" itemprop="commentsCount"></span>
+                <a href="/2017/01/25/17-BezierCurveIniOS1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/25/17-BezierCurveIniOS1/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +324,7 @@
 
           
           
-             <span id="/2016/06/20/10-OCatomicThreadSafety/" class="leancloud_visitors" data-flag-title="使用atomic修饰的属性并不会线程安全">
+             <span id="/2017/01/25/17-BezierCurveIniOS1/" class="leancloud_visitors" data-flag-title="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -330,15 +346,45 @@
       
 
       
-        <h2 id="误解"><a href="#误解" class="headerlink" title="误解"></a>误解</h2><p>一开始我们都认为 <strong>noatomic</strong> 非原子性，其修饰的属性是非线程安全的，而 <strong>atomic</strong>原子性修饰的属性是线程安全。其实事实并非如此。<br>被<strong>atomic</strong>修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:<br><a id="more"></a></p>
-<h2 id="从源码着手"><a href="#从源码着手" class="headerlink" title="从源码着手"></a>从源码着手</h2><p>对于一个没有自定义setter方法的属性，编译后编译器会生成一个 <code>objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)</code> 的调用，源码在下面：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setProperty</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SUPPORT_GC</span></span><br><span class="line">    (UseGC ? objc_setProperty_gc : objc_setProperty_non_gc)</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    objc_setProperty_non_gc</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        (self, _cmd, offset, newValue, atomic, shouldCopy);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">PRIVATE_EXTERN <span class="keyword">void</span> <span class="title">objc_setProperty_non_gc</span><span class="params">(id self, SEL _cmd, <span class="keyword">ptrdiff_t</span> offset, id newValue, BOOL atomic, BOOL shouldCopy)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Retain release world</span></span><br><span class="line">    id oldValue, *slot = (id*) ((<span class="keyword">char</span>*)self + offset);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// atomic or not, if slot would be unchanged, do nothing.</span></span><br><span class="line">    <span class="keyword">if</span> (!shouldCopy &amp;&amp; *slot == newValue) <span class="keyword">return</span>;</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">if</span> (shouldCopy) &#123;</span><br><span class="line">        newValue = (shouldCopy == OBJC_PROPERTY_MUTABLECOPY ? [newValue mutableCopyWithZone:<span class="literal">NULL</span>] : [newValue copyWithZone:<span class="literal">NULL</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newValue = objc_retain(newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!atomic) &#123;</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">spin_lock_t</span> *slotlock = &amp;PropertyLocks[GOODHASH(slot)];</span><br><span class="line">        _spin_lock(slotlock);</span><br><span class="line">        oldValue = *slot;</span><br><span class="line">        *slot = newValue;        </span><br><span class="line">        _spin_unlock(slotlock);        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    objc_release(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>源码的方法命名有点不习惯，但是也并不会影响理解，第23行有个是否使用<strong>atomic</strong>修饰的判断，我们看else中的代码。</p>
-<p>从使用PropertyLocks数组中的一个给写操作上锁，在赋完值之后进行解锁操作。</p>
-<p>也就是说，<strong>atomic</strong>只是在 setter方法 中加锁，当多个线程同时写操作时，要进行排队。A线程对属性进行写操作，B线程不可以对该属性进行写操作，只有等A线程访问结束，B线程才能操作。问题在于，当A线程再想对属性进行读操作，读取的是B线程写的数据，这就破坏了线程安全,。如果再有C线程在A线程读操作前Release这个属性，那么程序就会Crash.<br>综上，<strong>atomic</strong> 操作是原子性的，它只保证了属性的setter和getter时的线程安全，并不能保证属性线程安全，<strong>atomic</strong>的使用只是更好的降低的线程出错的可能性。</p>
-<h2 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h2><p>那么问题来了，Apple为什么只给setter和getter方法加锁而不直接使用<strong>@synchronized</strong>加锁呢？<br>看看 <strong>synchronized</strong> 操作的<a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">源码</a>， 简单的一个注解，其实做了许多事情，每个<strong>@synchronized()</strong>代码块，使用了 objc_sync_enter、objc_sync_exit和id2data三个加解锁序列，而这种作法相比使用一个<strong>atomic</strong>来修饰，只给setter、getter方法加锁的方式 在性能上要慢很多。读写操作一个属性时，通常需要很快来完成，<strong>atomic</strong>的方式要适合这项工作。</p>
-<p>在必要时，可以使用<strong>@synchronized</strong>，但是在保证多线程操作在发生错误的时候，不会发生dead lock。</p>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p>[1]:  <a href="http://www.cnblogs.com/xuanhun/archive/2012/01/01/2309571.html" target="_blank" rel="external">Hash碰撞与拒绝服务攻击 </a><br>[2]:  <a href="http://opensource.apple.com/source/objc4/objc4-493.9/runtime/Accessors.subproj/objc-accessors.m" target="_blank" rel="external">Source code of objc-accessors.m file </a><br>[3]:  <a href="http://www.jianshu.com/p/e7e44dfb1d2b" target="_blank" rel="external">iOS多线程开发－线程安全 </a><br>[4]:  <a href="https://github.com/opensource-apple/objc4/blob/master/runtime/objc-sync.mm" target="_blank" rel="external">Source code of @synchronized </a><br>[5]:  <a href="http://googlemac.blogspot.sg/2006/10/synchronized-swimming.html" target="_blank" rel="external">Synchronized-swimming </a><br>[6]:  <a href="http://objccn.io/issue-2-4/" target="_blank" rel="external">线程安全类的设计 </a><br>[7]:  <a href="http://m.blog.csdn.net/article/details?id=49687215" target="_blank" rel="external">atomic一定是线程安全的吗？ </a></p>
+        <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本系列文章通过介绍 <strong><em>贝塞尔曲线</em></strong> 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。</p>
+<p>你可能在很多地方听说过<strong><em>贝塞尔曲线</em></strong>，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？</p>
+<a id="more"></a>
+<h2 id="二、贝塞尔曲线简介"><a href="#二、贝塞尔曲线简介" class="headerlink" title="二、贝塞尔曲线简介"></a>二、贝塞尔曲线简介</h2><h3 id="1-贝塞尔曲线-是什么"><a href="#1-贝塞尔曲线-是什么" class="headerlink" title="1. 贝塞尔曲线 是什么"></a>1. 贝塞尔曲线 是什么</h3><p>头一次听，可能以为他和牛顿定律，斐波那契数列一样是由一个名字叫贝塞尔的人发明的，然而并不是。贝塞尔曲线的数学基础最早是1912年就在当世广为人知的<a href="http://en.wikipedia.org/wiki/Bernstein_polynomial" target="_blank" rel="external">伯恩斯坦多项式</a>，那什么又是伯恩思坦多项式呢，简单地说，伯恩斯坦多项式是用来证明，在 [a, b]区间上所有的连续函数都可以多项式来逼近，并且一致收敛，再简单地说，就是在一个连续函数，你可以将它写成n个伯恩思坦多项式相加的形式，并且随着n 趋向于无穷大，这个多项式将一致收敛到原函数。</p>
+<p>听不懂，没关系，继续往下看。</p>
+<p>虽然在1912年就已经被发现，但是其对图形的适用性在半个世纪内者也没有被实现，直到1959年在雪铁龙汽车就职的数学家 <a href="http://en.wikipedia.org/wiki/Paul_de_Casteljau" target="_blank" rel="external">Paul de Casteljau</a>，开始对伯恩斯坦多项式进行图形化的尝试，并推出一种新的数值稳定(即在求伯恩斯坦多项式的时候不会引入数值误差)递归算法 <a href="http://en.wikipedia.org/wiki/De_Casteljau&#39;s_algorithm" target="_blank" rel="external">de Casteljau 算法</a>用来伯恩斯坦多项式。根据这个算法，就可以只通过很少的控制点，去生成复杂的平滑曲线，也就是贝塞尔曲线。</p>
+<p>贝塞尔曲线的成名，得益于法国工程师 <a href="http://en.wikipedia.org/wiki/Pierre_B%C3%A9zier" target="_blank" rel="external">Pierre Bézier</a> ，他将这种算法用来辅助雷诺汽车的车体工业设计，并且得到广泛宣传。</p>
+<h3 id="2-现实应用"><a href="#2-现实应用" class="headerlink" title="2. 现实应用"></a>2. 现实应用</h3><p>正是因为其绘制简便却具有极强的描述能力，贝塞尔曲线在工业设计领域迅速得到了广泛的推广和应用。随后随着计算机技术的发展，在计算机图形学领域，尤其是矢量图形学，贝塞尔曲线也占有了重要的地位。</p>
+<p>今天我们使用的绘图软件，Illustrator、CorelDraw 等，无一例外都提供了绘制贝塞尔曲线的功能。甚至像 Photoshop 这样的位图编辑软件，也把贝塞尔曲线作为仅有的矢量绘制工具（钢笔工具）包含其中。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="CorelDraw.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-850a7f091b7455ce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>这里的一个网站可以在线模拟钢笔工具的使用：<a href="http://bezier.method.ac/" target="_blank" rel="external">http://bezier.method.ac/</a></p>
+<p>推广到三维空间的<a href="http://en.wikipedia.org/wiki/B%C3%A9zier_surface" target="_blank" rel="external">贝塞尔曲面</a>，以及更进一步的<a href="http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline" target="_blank" rel="external">非均匀有理 B 样条（NURBS）</a>，早已成为当今计算机辅助设计（CAD）的行业标准，不论是我们平常用到的各种产品，还是在电影院看到的精彩大片，都少不了它们的功劳。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-90e77721e06237ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="曲面.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-58a1ab918eb38850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="用于汽车设计"></p>
+<h2 id="二、如何绘制贝塞尔曲线"><a href="#二、如何绘制贝塞尔曲线" class="headerlink" title="二、如何绘制贝塞尔曲线"></a>二、如何绘制贝塞尔曲线</h2><p>下面我们就通过例子来了解一下如何用 <a href="http://en.wikipedia.org/wiki/De_Casteljau&#39;s_algorithm" target="_blank" rel="external">de Casteljau 算法</a>绘制一条贝塞尔曲线。</p>
+<ol>
+<li>画线段AC，BC, 相交于C点.</li>
+<li>在线段AC取点D，BC上取点E使 <code>AD:DC = CE:EB</code> 。 如下图所示：</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-a2c50c63f8635d91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>3.连接点D、E<br>4.在线段DE上取点F，使 <code>AD:DC = CE:EB = DF:FE</code>。 如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-502dfb5df51970cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>至此我们就找到了贝塞尔曲线上的点F，这时让选取的点 D 在线段AB上从起点 A 移动到终点 B，找出所有的贝塞尔曲线上的点 F。所有的点找出来之后，我们也得到了这条贝塞尔曲线。如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-ee8478efb6f28335.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>如果你实在想象不出这个过程，没关系，看动画！</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-82781ddb157c4c6a.gif?imageMogr2/auto-orient/strip" alt="bezierPath.gif"></p>
+<p>这样就画出了一条贝塞尔曲线。</p>
+<p>贝塞尔曲线的一个比较好的动态演示网站：<a href="http://myst729.github.io/bezier-curve" target="_blank" rel="external">http://myst729.github.io/bezier-curve</a></p>
+<h2 id="三、多次（阶）贝塞尔曲线"><a href="#三、多次（阶）贝塞尔曲线" class="headerlink" title="三、多次（阶）贝塞尔曲线"></a>三、多次（阶）贝塞尔曲线</h2><p>回过头来看这条贝塞尔曲线，</p>
+<blockquote>
+<p>为了确定曲线上的一个点，需要在线段AC和BC上进行取点的操作，A、B、C三个点被称为控制点，因此我们称得到的曲线为二(控制点个数n-1)次贝塞尔曲线。</p>
+</blockquote>
+<p>根据控制点的个数，贝塞尔曲线被分为一次贝塞尔曲线，二次贝塞尔曲线（3个控制点）、三次贝塞尔曲线（4个控制点）等等，以此类推。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-91de929ee26595f4.gif?imageMogr2/auto-orient/strip" alt="二次贝塞尔曲线.gif"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-dc67b41b181260ae.gif?imageMogr2/auto-orient/strip" alt="三次贝塞尔曲线.gif"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-9c2ddf60cab67586.gif?imageMogr2/auto-orient/strip" alt="四次贝塞尔曲线.gif"></p>
+<p>还有只有两个控制点的一次贝塞尔曲线，没错是一条线段，它是贝塞尔曲线的特殊情况：<br><img src="http://upload-images.jianshu.io/upload_images/3450093-fc72aea84a7d25f8.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<h3 id="四、至此"><a href="#四、至此" class="headerlink" title="四、至此"></a>四、至此</h3><p>至此我们对贝塞尔曲线的基本有了一个基本的了解。</p>
 
       
     </div>
@@ -363,17 +409,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/03/25/9-TheAnnotationOfGson/" rel="next" title="说说Gson中的注解">
-                <i class="fa fa-chevron-left"></i> 说说Gson中的注解
+              <a href="/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/" rel="next" title="Core Animation(核心动画) 中KeyPath的取值">
+                <i class="fa fa-chevron-left"></i> Core Animation(核心动画) 中KeyPath的取值
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/06/22/11-26thWeekDevTips/" rel="prev" title="第26周开发Tips">
-                第26周开发Tips <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -437,8 +479,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/06/20/10-OCatomicThreadSafety/"
-           data-title="使用atomic修饰的属性并不会线程安全" data-url="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/">
+      <div class="ds-thread" data-thread-key="2017/01/25/17-BezierCurveIniOS1/"
+           data-title="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础" data-url="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/">
       </div>
     
   </div>
@@ -549,7 +591,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#误解"><span class="nav-number">1.</span> <span class="nav-text">误解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从源码着手"><span class="nav-number">2.</span> <span class="nav-text">从源码着手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题来了"><span class="nav-number">3.</span> <span class="nav-text">问题来了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接："><span class="nav-number">4.</span> <span class="nav-text">参考链接：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、前言"><span class="nav-number">1.</span> <span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、贝塞尔曲线简介"><span class="nav-number">2.</span> <span class="nav-text">二、贝塞尔曲线简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-贝塞尔曲线-是什么"><span class="nav-number">2.1.</span> <span class="nav-text">1. 贝塞尔曲线 是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-现实应用"><span class="nav-number">2.2.</span> <span class="nav-text">2. 现实应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何绘制贝塞尔曲线"><span class="nav-number">3.</span> <span class="nav-text">二、如何绘制贝塞尔曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、多次（阶）贝塞尔曲线"><span class="nav-number">4.</span> <span class="nav-text">三、多次（阶）贝塞尔曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#四、至此"><span class="nav-number">4.1.</span> <span class="nav-text">四、至此</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
