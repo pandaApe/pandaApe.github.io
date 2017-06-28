@@ -90,7 +90,7 @@
 <meta property="og:url" content="https://pandaape.github.io/2016/06/20/10-OCatomicThreadSafety/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
 <meta property="og:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:">
-<meta property="og:updated_time" content="2016-06-25T05:17:17.000Z">
+<meta property="og:updated_time" content="2017-06-27T00:17:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用atomic修饰的属性并不会线程安全">
 <meta name="twitter:description" content="误解一开始我们都认为 noatomic 非原子性，其修饰的属性是非线程安全的，而 atomic原子性修饰的属性是线程安全。其实事实并非如此。被atomic修饰的属性，所说的线程安全，只是把setter 和getter方法中对属性进行读写时才会加锁。Objective-C的Runtime是开源的，我们可以在源代码中一窥究竟:">
@@ -483,7 +483,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">17</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>

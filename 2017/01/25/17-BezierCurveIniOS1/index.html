@@ -84,16 +84,32 @@
 
 
 
-<meta name="description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swift可选绑定多个可选变量">
-<meta property="og:url" content="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/index.html">
+<meta property="og:title" content="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
+<meta property="og:url" content="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta property="og:description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-850a7f091b7455ce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-90e77721e06237ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-58a1ab918eb38850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-a2c50c63f8635d91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-502dfb5df51970cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-ee8478efb6f28335.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/172968-82781ddb157c4c6a.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-91de929ee26595f4.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-dc67b41b181260ae.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-9c2ddf60cab67586.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3450093-fc72aea84a7d25f8.gif?imageMogr2/auto-orient/strip">
 <meta property="og:updated_time" content="2017-06-27T00:17:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift可选绑定多个可选变量">
-<meta name="twitter:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="twitter:title" content="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
+<meta name="twitter:description" content="一、前言本系列文章通过介绍 贝塞尔曲线 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。
+你可能在很多地方听说过贝塞尔曲线，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
 
@@ -114,9 +130,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/"/>
 
-  <title> Swift可选绑定多个可选变量 | PandaApe's Blog </title>
+  <title> iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础 | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -255,7 +271,7 @@
             
             
               
-                Swift可选绑定多个可选变量
+                iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础
               
             
           </h1>
@@ -267,8 +283,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-12-05T22:19:09+08:00" content="2015-12-05">
-              2015-12-05
+            <time itemprop="dateCreated" datetime="2017-01-25T20:29:54+08:00" content="2017-01-25">
+              2017-01-25
             </time>
           </span>
 
@@ -297,8 +313,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/05/6-OptionalBindingMulti-values/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/" itemprop="commentsCount"></span>
+                <a href="/2017/01/25/17-BezierCurveIniOS1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/25/17-BezierCurveIniOS1/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +324,7 @@
 
           
           
-             <span id="/2015/12/05/6-OptionalBindingMulti-values/" class="leancloud_visitors" data-flag-title="Swift可选绑定多个可选变量">
+             <span id="/2017/01/25/17-BezierCurveIniOS1/" class="leancloud_visitors" data-flag-title="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -330,11 +346,45 @@
       
 
       
-        <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
+        <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本系列文章通过介绍 <strong><em>贝塞尔曲线</em></strong> 的基础知识，贝塞尔曲线在iOS中的应用以及一些高级技巧，循序渐进，试图让读者对iOS的中贝塞尔曲线知识有一个较系统的认识。</p>
+<p>你可能在很多地方听说过<strong><em>贝塞尔曲线</em></strong>，但是贝塞尔曲线到底是什么，它有什么特性能让它有这么高的知名度，它到底有什么用呢？</p>
 <a id="more"></a>
-<p>使用可选绑定（optional binding）来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量.<br>单个可选绑定我们这样用：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>? </span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 如果是多个,就用逗号隔开，第一个之后let可以省略，默认是let<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>?</span><br><span class="line"><span class="keyword">var</span> str2:<span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"-"</span></span><br><span class="line">str2 = <span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1, s2 = str2&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1 + s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意：<em>多个可选绑定之间是“并且”（&amp;&amp;）关系，如果有一个可选变量没有值，则整个条件语句的结果为false.</em></p>
+<h2 id="二、贝塞尔曲线简介"><a href="#二、贝塞尔曲线简介" class="headerlink" title="二、贝塞尔曲线简介"></a>二、贝塞尔曲线简介</h2><h3 id="1-贝塞尔曲线-是什么"><a href="#1-贝塞尔曲线-是什么" class="headerlink" title="1. 贝塞尔曲线 是什么"></a>1. 贝塞尔曲线 是什么</h3><p>头一次听，可能以为他和牛顿定律，斐波那契数列一样是由一个名字叫贝塞尔的人发明的，然而并不是。贝塞尔曲线的数学基础最早是1912年就在当世广为人知的<a href="http://en.wikipedia.org/wiki/Bernstein_polynomial" target="_blank" rel="external">伯恩斯坦多项式</a>，那什么又是伯恩思坦多项式呢，简单地说，伯恩斯坦多项式是用来证明，在 [a, b]区间上所有的连续函数都可以多项式来逼近，并且一致收敛，再简单地说，就是在一个连续函数，你可以将它写成n个伯恩思坦多项式相加的形式，并且随着n 趋向于无穷大，这个多项式将一致收敛到原函数。</p>
+<p>听不懂，没关系，继续往下看。</p>
+<p>虽然在1912年就已经被发现，但是其对图形的适用性在半个世纪内者也没有被实现，直到1959年在雪铁龙汽车就职的数学家 <a href="http://en.wikipedia.org/wiki/Paul_de_Casteljau" target="_blank" rel="external">Paul de Casteljau</a>，开始对伯恩斯坦多项式进行图形化的尝试，并推出一种新的数值稳定(即在求伯恩斯坦多项式的时候不会引入数值误差)递归算法 <a href="http://en.wikipedia.org/wiki/De_Casteljau&#39;s_algorithm" target="_blank" rel="external">de Casteljau 算法</a>用来伯恩斯坦多项式。根据这个算法，就可以只通过很少的控制点，去生成复杂的平滑曲线，也就是贝塞尔曲线。</p>
+<p>贝塞尔曲线的成名，得益于法国工程师 <a href="http://en.wikipedia.org/wiki/Pierre_B%C3%A9zier" target="_blank" rel="external">Pierre Bézier</a> ，他将这种算法用来辅助雷诺汽车的车体工业设计，并且得到广泛宣传。</p>
+<h3 id="2-现实应用"><a href="#2-现实应用" class="headerlink" title="2. 现实应用"></a>2. 现实应用</h3><p>正是因为其绘制简便却具有极强的描述能力，贝塞尔曲线在工业设计领域迅速得到了广泛的推广和应用。随后随着计算机技术的发展，在计算机图形学领域，尤其是矢量图形学，贝塞尔曲线也占有了重要的地位。</p>
+<p>今天我们使用的绘图软件，Illustrator、CorelDraw 等，无一例外都提供了绘制贝塞尔曲线的功能。甚至像 Photoshop 这样的位图编辑软件，也把贝塞尔曲线作为仅有的矢量绘制工具（钢笔工具）包含其中。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-a369dd9e0ce1dc94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="CorelDraw.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-850a7f091b7455ce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>这里的一个网站可以在线模拟钢笔工具的使用：<a href="http://bezier.method.ac/" target="_blank" rel="external">http://bezier.method.ac/</a></p>
+<p>推广到三维空间的<a href="http://en.wikipedia.org/wiki/B%C3%A9zier_surface" target="_blank" rel="external">贝塞尔曲面</a>，以及更进一步的<a href="http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline" target="_blank" rel="external">非均匀有理 B 样条（NURBS）</a>，早已成为当今计算机辅助设计（CAD）的行业标准，不论是我们平常用到的各种产品，还是在电影院看到的精彩大片，都少不了它们的功劳。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-90e77721e06237ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="曲面.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-58a1ab918eb38850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="用于汽车设计"></p>
+<h2 id="二、如何绘制贝塞尔曲线"><a href="#二、如何绘制贝塞尔曲线" class="headerlink" title="二、如何绘制贝塞尔曲线"></a>二、如何绘制贝塞尔曲线</h2><p>下面我们就通过例子来了解一下如何用 <a href="http://en.wikipedia.org/wiki/De_Casteljau&#39;s_algorithm" target="_blank" rel="external">de Casteljau 算法</a>绘制一条贝塞尔曲线。</p>
+<ol>
+<li>画线段AC，BC, 相交于C点.</li>
+<li>在线段AC取点D，BC上取点E使 <code>AD:DC = CE:EB</code> 。 如下图所示：</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-a2c50c63f8635d91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>3.连接点D、E<br>4.在线段DE上取点F，使 <code>AD:DC = CE:EB = DF:FE</code>。 如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-502dfb5df51970cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>至此我们就找到了贝塞尔曲线上的点F，这时让选取的点 D 在线段AB上从起点 A 移动到终点 B，找出所有的贝塞尔曲线上的点 F。所有的点找出来之后，我们也得到了这条贝塞尔曲线。如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-ee8478efb6f28335.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>如果你实在想象不出这个过程，没关系，看动画！</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/172968-82781ddb157c4c6a.gif?imageMogr2/auto-orient/strip" alt="bezierPath.gif"></p>
+<p>这样就画出了一条贝塞尔曲线。</p>
+<p>贝塞尔曲线的一个比较好的动态演示网站：<a href="http://myst729.github.io/bezier-curve" target="_blank" rel="external">http://myst729.github.io/bezier-curve</a></p>
+<h2 id="三、多次（阶）贝塞尔曲线"><a href="#三、多次（阶）贝塞尔曲线" class="headerlink" title="三、多次（阶）贝塞尔曲线"></a>三、多次（阶）贝塞尔曲线</h2><p>回过头来看这条贝塞尔曲线，</p>
+<blockquote>
+<p>为了确定曲线上的一个点，需要在线段AC和BC上进行取点的操作，A、B、C三个点被称为控制点，因此我们称得到的曲线为二(控制点个数n-1)次贝塞尔曲线。</p>
+</blockquote>
+<p>根据控制点的个数，贝塞尔曲线被分为一次贝塞尔曲线，二次贝塞尔曲线（3个控制点）、三次贝塞尔曲线（4个控制点）等等，以此类推。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-91de929ee26595f4.gif?imageMogr2/auto-orient/strip" alt="二次贝塞尔曲线.gif"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-dc67b41b181260ae.gif?imageMogr2/auto-orient/strip" alt="三次贝塞尔曲线.gif"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3450093-9c2ddf60cab67586.gif?imageMogr2/auto-orient/strip" alt="四次贝塞尔曲线.gif"></p>
+<p>还有只有两个控制点的一次贝塞尔曲线，没错是一条线段，它是贝塞尔曲线的特殊情况：<br><img src="http://upload-images.jianshu.io/upload_images/3450093-fc72aea84a7d25f8.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<h3 id="四、至此"><a href="#四、至此" class="headerlink" title="四、至此"></a>四、至此</h3><p>至此我们对贝塞尔曲线的基本有了一个基本的了解。</p>
 
       
     </div>
@@ -359,17 +409,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/03/5-IOS8SelfSizingCells/" rel="next" title="iOS8后使用AutoLayot自动计算Cell高度">
-                <i class="fa fa-chevron-left"></i> iOS8后使用AutoLayot自动计算Cell高度
+              <a href="/2016/11/28/14-48thWeekDevTips/" rel="next" title="第48周开发Tips">
+                <i class="fa fa-chevron-left"></i> 第48周开发Tips
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/10/7-SwiftTypeCompatibilityObjc/" rel="prev" title="Swift的类型兼容和@Objc修饰符">
-                Swift的类型兼容和@Objc修饰符 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -433,8 +479,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/"
-           data-title="Swift可选绑定多个可选变量" data-url="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/">
+      <div class="ds-thread" data-thread-key="2017/01/25/17-BezierCurveIniOS1/"
+           data-title="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础" data-url="https://pandaape.github.io/2017/01/25/17-BezierCurveIniOS1/">
       </div>
     
   </div>
@@ -545,7 +591,7 @@
               
             
             
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、前言"><span class="nav-number">1.</span> <span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、贝塞尔曲线简介"><span class="nav-number">2.</span> <span class="nav-text">二、贝塞尔曲线简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-贝塞尔曲线-是什么"><span class="nav-number">2.1.</span> <span class="nav-text">1. 贝塞尔曲线 是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-现实应用"><span class="nav-number">2.2.</span> <span class="nav-text">2. 现实应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何绘制贝塞尔曲线"><span class="nav-number">3.</span> <span class="nav-text">二、如何绘制贝塞尔曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、多次（阶）贝塞尔曲线"><span class="nav-number">4.</span> <span class="nav-text">三、多次（阶）贝塞尔曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#四、至此"><span class="nav-number">4.1.</span> <span class="nav-text">四、至此</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

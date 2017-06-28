@@ -84,16 +84,15 @@
 
 
 
-<meta name="description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Swift可选绑定多个可选变量">
-<meta property="og:url" content="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/index.html">
+<meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PandaApe's Blog">
+<meta property="og:url" content="https://pandaape.github.io/archives/2017/01/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
-<meta property="og:updated_time" content="2017-06-27T00:17:42.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift可选绑定多个可选变量">
-<meta name="twitter:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="twitter:title" content="PandaApe's Blog">
+<meta name="twitter:description">
 
 
 
@@ -114,9 +113,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/"/>
+  <link rel="canonical" href="https://pandaape.github.io/archives/2017/01/"/>
 
-  <title> Swift可选绑定多个可选变量 | PandaApe's Blog </title>
+  <title> Archive | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -146,7 +145,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container one-collumn sidebar-position-left  page-archive  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,196 +233,66 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-collapse">
+    <span class="archive-move-on"></span>
+
+    <span class="archive-page-counter">
+      
+      
+      
+        
+      
+      Um..! 17 posts in total. Keep on posting.
+    </span>
+
     
 
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Swift可选绑定多个可选变量
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-12-05T22:19:09+08:00" content="2015-12-05">
-              2015-12-05
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/12/05/6-OptionalBindingMulti-values/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/12/05/6-OptionalBindingMulti-values/" class="leancloud_visitors" data-flag-title="Swift可选绑定多个可选变量">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">visitors </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
-      
-        <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
-<a id="more"></a>
-<p>使用可选绑定（optional binding）来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量.<br>单个可选绑定我们这样用：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>? </span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 如果是多个,就用逗号隔开，第一个之后let可以省略，默认是let<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>?</span><br><span class="line"><span class="keyword">var</span> str2:<span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"-"</span></span><br><span class="line">str2 = <span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1, s2 = str2&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1 + s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意：<em>多个可选绑定之间是“并且”（&amp;&amp;）关系，如果有一个可选变量没有值，则整个条件语句的结果为false.</em></p>
-
-      
-    </div>
-
-    <div>
       
         
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2015/12/03/5-IOS8SelfSizingCells/" rel="next" title="iOS8后使用AutoLayot自动计算Cell高度">
-                <i class="fa fa-chevron-left"></i> iOS8后使用AutoLayot自动计算Cell高度
-              </a>
-            
-          </div>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/10/7-SwiftTypeCompatibilityObjc/" rel="prev" title="Swift的类型兼容和@Objc修饰符">
-                Swift的类型兼容和@Objc修饰符 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
+        <div class="collection-title">
+          <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
         </div>
       
+      
 
       
-      
-    </footer>
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h1 class="post-title">
+        
+            <a class="post-title-link" href="/2017/01/25/17-BezierCurveIniOS1/" itemprop="url">
+              
+                <span itemprop="name">iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础</span>
+              
+            </a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2017-01-25T20:29:54+08:00"
+              content="2017-01-25" >
+          01-25
+        </time>
+      </div>
+
+    </header>
   </article>
 
 
 
-    <div class="post-spread">
-      
-        
-  <div class="bdsharebuttonbox">
-    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
-    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
-    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
-    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
-    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
-    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
-    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
-    <a href="#" class="bds_more" data-cmd="more"></a>
-    <a class="bds_count" data-cmd="count"></a>
-  </div>
-  <script>
-    window._bd_share_config = {
-      "common": {
-        "bdText": "",
-        "bdMini": "2",
-        "bdMiniList": false,
-        "bdPic": ""
-      },
-      "share": {
-        "bdSize": "16",
-        "bdStyle": "0"
-      },
-      "image": {
-        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
-        "viewText": "分享到：",
-        "viewSize": "16"
-      }
-    }
-  </script>
+    
 
-<script>
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
-</script>
+  </section>
 
-      
-    </div>
-  </div>
+  
+
 
 
           </div>
@@ -431,14 +300,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-      <div class="ds-thread" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/"
-           data-title="Swift可选绑定多个可选变量" data-url="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/">
-      </div>
-    
-  </div>
-
 
         </div>
         
@@ -458,17 +319,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel ">
+      <section class="site-overview sidebar-panel  sidebar-panel-active ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpg"
@@ -538,17 +390,6 @@
 
       </section>
 
-      
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-            
-              
-            
-            
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
-            
-          </div>
-        </section>
       
 
     </div>
@@ -652,9 +493,11 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
-
+  
+    <script type="text/javascript" id="motion.page.archive">
+      $('.archive-year').velocity('transition.slideLeftIn');
+    </script>
+  
 
 
   

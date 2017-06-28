@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="description" content="在Core Animation中， 借助Core Animation 提供的几个动画类我们可以对一个Layer做各种酷炫的动画，在实例 CAPropertyAnimation 的时候（ CABasicAnimation 和 CAKeyFrameAnimation均继承自该类），通过构造方法 convenience init(keyPath path: String?)，需要传入一个字符串。 那么问">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swift可选绑定多个可选变量">
-<meta property="og:url" content="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/index.html">
+<meta property="og:title" content="Core Animation(核心动画) 中KeyPath的取值">
+<meta property="og:url" content="https://pandaape.github.io/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta property="og:description" content="在Core Animation中， 借助Core Animation 提供的几个动画类我们可以对一个Layer做各种酷炫的动画，在实例 CAPropertyAnimation 的时候（ CABasicAnimation 和 CAKeyFrameAnimation均继承自该类），通过构造方法 convenience init(keyPath path: String?)，需要传入一个字符串。 那么问">
 <meta property="og:updated_time" content="2017-06-27T00:17:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift可选绑定多个可选变量">
-<meta name="twitter:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="twitter:title" content="Core Animation(核心动画) 中KeyPath的取值">
+<meta name="twitter:description" content="在Core Animation中， 借助Core Animation 提供的几个动画类我们可以对一个Layer做各种酷炫的动画，在实例 CAPropertyAnimation 的时候（ CABasicAnimation 和 CAKeyFrameAnimation均继承自该类），通过构造方法 convenience init(keyPath path: String?)，需要传入一个字符串。 那么问">
 
 
 
@@ -114,9 +114,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/"/>
 
-  <title> Swift可选绑定多个可选变量 | PandaApe's Blog </title>
+  <title> Core Animation(核心动画) 中KeyPath的取值 | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -255,7 +255,7 @@
             
             
               
-                Swift可选绑定多个可选变量
+                Core Animation(核心动画) 中KeyPath的取值
               
             
           </h1>
@@ -267,8 +267,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-12-05T22:19:09+08:00" content="2015-12-05">
-              2015-12-05
+            <time itemprop="dateCreated" datetime="2016-08-15T22:20:24+08:00" content="2016-08-15">
+              2016-08-15
             </time>
           </span>
 
@@ -297,8 +297,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/05/6-OptionalBindingMulti-values/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/" itemprop="commentsCount"></span>
+                <a href="/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +308,7 @@
 
           
           
-             <span id="/2015/12/05/6-OptionalBindingMulti-values/" class="leancloud_visitors" data-flag-title="Swift可选绑定多个可选变量">
+             <span id="/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/" class="leancloud_visitors" data-flag-title="Core Animation(核心动画) 中KeyPath的取值">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -330,11 +330,328 @@
       
 
       
-        <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
+        <p>在Core Animation中， 借助<strong><em>Core Animation</em></strong> 提供的几个动画类我们可以对一个Layer做各种酷炫的动画，在实例 CAPropertyAnimation 的时候（ <code>CABasicAnimation</code> 和 <code>CAKeyFrameAnimation</code>均继承自该类），通过构造方法 <code>convenience init(keyPath path: String?)</code>，需要传入一个字符串。 那么问题来了，这个参数到底可以取哪些值呢？</p>
 <a id="more"></a>
-<p>使用可选绑定（optional binding）来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量.<br>单个可选绑定我们这样用：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>? </span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 如果是多个,就用逗号隔开，第一个之后let可以省略，默认是let<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>?</span><br><span class="line"><span class="keyword">var</span> str2:<span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"-"</span></span><br><span class="line">str2 = <span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1, s2 = str2&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1 + s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意：<em>多个可选绑定之间是“并且”（&amp;&amp;）关系，如果有一个可选变量没有值，则整个条件语句的结果为false.</em></p>
+<p>我们知道 <code>CALayer</code> 实现了 <code>NSKeyValueCoding</code> 协议，因此我们可以使用 KVC 对 CALayer的实例中的属性进行取值和赋值，而在 <strong><em>Core Animation</em></strong> 提供的几个动画类影响的对象便是 <code>CALayer</code>的实例，我们可以推测在 CAPropertyAnimation 类中构造方法 <code>convenience init(keyPath path: String?)</code> 的keyPath参数的取值 应该是 CALayer 中的属性。 带着这个推测，参考苹果的官方文档，笔者把可以用作keyPath的值列举如下。</p>
+<h2 id="一、可动画属性"><a href="#一、可动画属性" class="headerlink" title="一、可动画属性"></a>一、可动画属性</h2><h3 id="1-几何属性-Geometry-Properties"><a href="#1-几何属性-Geometry-Properties" class="headerlink" title="1. 几何属性 (Geometry Properties)"></a>1. 几何属性 (Geometry Properties)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transform.rotation.x</td>
+<td>按x轴旋转的弧度</td>
+<td>Set to an NSNumber object whose value is the rotation, in radians, in the x axis.</td>
+</tr>
+<tr>
+<td>transform.rotation.y</td>
+<td>按y轴旋转的弧度</td>
+<td>Set to an NSNumber object whose value is the rotation, in radians, in the y axis.</td>
+</tr>
+<tr>
+<td>transform.rotation.z</td>
+<td>按z轴旋转的弧度</td>
+<td>Set to an NSNumber object whose value is the rotation, in radians, in the z axis.</td>
+</tr>
+<tr>
+<td>transform.rotation</td>
+<td>按z轴旋转的弧度, 和transform.rotation.z效果一样</td>
+<td>Set to an NSNumber object whose value is the rotation, in radians, in the z axis. This field is identical to setting the rotation.z field.</td>
+</tr>
+<tr>
+<td>transform.scale.x</td>
+<td>在x轴按比例放大缩小</td>
+<td>Set to an NSNumber object whose value is the scale factor for the x axis.</td>
+</tr>
+<tr>
+<td>transform.scale.y</td>
+<td>在x轴按比例放大缩小</td>
+<td>Set to an NSNumber object whose value is the scale factor for the y axis.</td>
+</tr>
+<tr>
+<td>transform.scale.z</td>
+<td>在z轴按比例放大缩小</td>
+<td>Set to an NSNumber object whose value is the scale factor for the z axis.</td>
+</tr>
+<tr>
+<td>transform.scale</td>
+<td>按比例放大缩小</td>
+<td>Set to an NSNumber object whose value is the average of all three scale factors.</td>
+</tr>
+<tr>
+<td>transform.translation.x</td>
+<td>沿x轴平移</td>
+<td>Set to an NSNumber object whose value is the translation factor along the x axis.</td>
+</tr>
+<tr>
+<td>transform.translation.y</td>
+<td>沿y轴平移</td>
+<td>Set to an NSNumber object whose value is the translation factor along the y axis.</td>
+</tr>
+<tr>
+<td>transform.translation.z</td>
+<td>沿z轴平移</td>
+<td>Set to an NSNumber object whose value is the translation factor along the z axis.</td>
+</tr>
+<tr>
+<td>transform.translation</td>
+<td>x,y 坐标均发生改变</td>
+<td>Set to an NSValue object containing an NSSize or CGSize data type. That data type indicates the amount to translate in the x and y axis.</td>
+</tr>
+<tr>
+<td>transform</td>
+<td>CATransform3D 4*4矩阵</td>
+<td></td>
+</tr>
+<tr>
+<td>bounds</td>
+<td>layer大小</td>
+<td></td>
+</tr>
+<tr>
+<td>position</td>
+<td>layer位置</td>
+<td></td>
+</tr>
+<tr>
+<td><del>frame</del></td>
+<td>不支持 frme 属性</td>
+<td><strong><em>computed from the bounds and position and is NOT animatable</em></strong></td>
+</tr>
+<tr>
+<td>anchorPoint</td>
+<td>锚点位置</td>
+<td></td>
+</tr>
+<tr>
+<td>cornerRadius</td>
+<td>圆角大小</td>
+<td></td>
+</tr>
+<tr>
+<td>zPosition</td>
+<td>z轴位置</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-背景属性-Background-Properties"><a href="#2-背景属性-Background-Properties" class="headerlink" title="2.背景属性 (Background Properties)"></a>2.背景属性 (Background Properties)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backgroundColor</td>
+<td>背景颜色</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-Layer内容-Layer-Content"><a href="#3-Layer内容-Layer-Content" class="headerlink" title="3.Layer内容 (Layer Content)"></a>3.Layer内容 (Layer Content)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>contents</td>
+<td>Layer内容，呈现在背景颜色之上</td>
+<td></td>
+</tr>
+<tr>
+<td>contentsRect</td>
+<td></td>
+<td>The rectangle, in the unit coordinate space, that defines the portion of the layer’s contents that should be used. </td>
+</tr>
+<tr>
+<td>masksToBounds</td>
+<td></td>
+<td>setting the layer’s masksToBounds property to YES does cause the layer to clip to its corner radius</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-子Layer内容-Sublayers-Content"><a href="#4-子Layer内容-Sublayers-Content" class="headerlink" title="4.子Layer内容 (Sublayers Content)"></a>4.子Layer内容 (Sublayers Content)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sublayers</td>
+<td>子Layer数组</td>
+</tr>
+<tr>
+<td>sublayerTransform</td>
+<td>子Layer的Transform</td>
+<td>Specifies the transform to apply to sublayers when rendering.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-边界属性-Border-Attributes"><a href="#5-边界属性-Border-Attributes" class="headerlink" title="5.边界属性 (Border Attributes)"></a>5.边界属性 (Border Attributes)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>borderColor</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>borderWidth</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-阴影属性-Shadow-Properties"><a href="#6-阴影属性-Shadow-Properties" class="headerlink" title="6.阴影属性 (Shadow Properties)"></a>6.阴影属性 (Shadow Properties)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>shadowColor</td>
+<td>阴影颜色</td>
+<td></td>
+</tr>
+<tr>
+<td>shadowOffset</td>
+<td>阴影偏移距离</td>
+<td></td>
+</tr>
+<tr>
+<td>shadowOpacity</td>
+<td>阴影透明度</td>
+<td></td>
+</tr>
+<tr>
+<td>shadowRadius</td>
+<td>阴影圆角</td>
+<td></td>
+</tr>
+<tr>
+<td>shadowPath</td>
+<td>阴影路径</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-透明度-Opacity-Property"><a href="#7-透明度-Opacity-Property" class="headerlink" title="7.透明度 (Opacity Property)"></a>7.透明度 (Opacity Property)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>opacity</td>
+<td>透明度</td>
+<td></td>
+</tr>
+<tr>
+<td>hiden</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-遮罩-Mask-Properties"><a href="#8-遮罩-Mask-Properties" class="headerlink" title="8.遮罩 (Mask Properties)"></a>8.遮罩 (Mask Properties)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mask</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-ShapeLayer属性-ShapeLayer"><a href="#9-ShapeLayer属性-ShapeLayer" class="headerlink" title="9.ShapeLayer属性 (ShapeLayer)"></a>9.ShapeLayer属性 (ShapeLayer)</h3><table>
+<thead>
+<tr>
+<th>Field Key Path</th>
+<th>Remark</th>
+<th>En Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fillColor</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>strokeColor</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>strokeStart</td>
+<td>从无到有</td>
+<td></td>
+</tr>
+<tr>
+<td>strokeEnd</td>
+<td>从有到无</td>
+<td></td>
+</tr>
+<tr>
+<td>lineWidth</td>
+<td>路径的线宽</td>
+<td></td>
+</tr>
+<tr>
+<td>miterLimit</td>
+<td>相交长度的最大值</td>
+<td></td>
+</tr>
+<tr>
+<td>lineDashPhase</td>
+<td>虚线样式</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="二、注意"><a href="#二、注意" class="headerlink" title="二、注意"></a>二、注意</h2><p>这里特别需要注意的是 layer的 <code>frame</code> 是不支持动画的，我们可以通过改变<code>position</code>和<code>`bounds</code> 变通实现</p>
+<h2 id="三、参考资料"><a href="#三、参考资料" class="headerlink" title="三、参考资料"></a>三、参考资料</h2><ul>
+<li><p><a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreAnimation_guide/Key-ValueCodingExtensions/Key-ValueCodingExtensions.html#//apple_ref/doc/uid/TP40004514-CH12-SW2" target="_blank" rel="external">Apple Key-Value Coding Extensions</a></p>
+</li>
+<li><p><a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreAnimation_guide/AnimatableProperties/AnimatableProperties.html#//apple_ref/doc/uid/TP40004514-CH11-SW1" target="_blank" rel="external">Layer Animatable Properties</a></p>
+</li>
+<li><p><a href="https://stackoverflow.com/questions/5459673/how-can-i-know-the-values-in-cabasicanimation-keypath" target="_blank" rel="external">How can I know the values in CABasicAnimation keyPath?</a></p>
+</li>
+<li><p><a href="https://stackoverflow.com/questions/9717397/what-is-the-role-of-key-path-in-core-animation" target="_blank" rel="external">What is the role of key path in Core Animation?</a></p>
+</li>
+</ul>
 
       
     </div>
@@ -359,16 +676,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/03/5-IOS8SelfSizingCells/" rel="next" title="iOS8后使用AutoLayot自动计算Cell高度">
-                <i class="fa fa-chevron-left"></i> iOS8后使用AutoLayot自动计算Cell高度
+              <a href="/2016/07/25/16-ObjectiveCRuntime-MsgSend/" rel="next" title="【Objective-C运行时】-消息发送">
+                <i class="fa fa-chevron-left"></i> 【Objective-C运行时】-消息发送
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/12/10/7-SwiftTypeCompatibilityObjc/" rel="prev" title="Swift的类型兼容和@Objc修饰符">
-                Swift的类型兼容和@Objc修饰符 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/11/28/14-48thWeekDevTips/" rel="prev" title="第48周开发Tips">
+                第48周开发Tips <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -433,8 +750,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/"
-           data-title="Swift可选绑定多个可选变量" data-url="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/">
+      <div class="ds-thread" data-thread-key="2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/"
+           data-title="Core Animation(核心动画) 中KeyPath的取值" data-url="https://pandaape.github.io/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/">
       </div>
     
   </div>
@@ -545,7 +862,7 @@
               
             
             
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、可动画属性"><span class="nav-number">1.</span> <span class="nav-text">一、可动画属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-几何属性-Geometry-Properties"><span class="nav-number">1.1.</span> <span class="nav-text">1. 几何属性 (Geometry Properties)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-背景属性-Background-Properties"><span class="nav-number">1.2.</span> <span class="nav-text">2.背景属性 (Background Properties)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Layer内容-Layer-Content"><span class="nav-number">1.3.</span> <span class="nav-text">3.Layer内容 (Layer Content)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-子Layer内容-Sublayers-Content"><span class="nav-number">1.4.</span> <span class="nav-text">4.子Layer内容 (Sublayers Content)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-边界属性-Border-Attributes"><span class="nav-number">1.5.</span> <span class="nav-text">5.边界属性 (Border Attributes)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-阴影属性-Shadow-Properties"><span class="nav-number">1.6.</span> <span class="nav-text">6.阴影属性 (Shadow Properties)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-透明度-Opacity-Property"><span class="nav-number">1.7.</span> <span class="nav-text">7.透明度 (Opacity Property)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-遮罩-Mask-Properties"><span class="nav-number">1.8.</span> <span class="nav-text">8.遮罩 (Mask Properties)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-ShapeLayer属性-ShapeLayer"><span class="nav-number">1.9.</span> <span class="nav-text">9.ShapeLayer属性 (ShapeLayer)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、注意"><span class="nav-number">2.</span> <span class="nav-text">二、注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、参考资料"><span class="nav-number">3.</span> <span class="nav-text">三、参考资料</span></a></li></ol></div>
             
           </div>
         </section>

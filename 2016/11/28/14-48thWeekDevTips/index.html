@@ -84,16 +84,18 @@
 
 
 
-<meta name="description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="description" content="iOS获取设备信息、运营商名称、网络状态项目需要在HTTP 请求的header里加设备信息、运营名称等，便于前后端联调时定位问题。Gist 地址">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swift可选绑定多个可选变量">
-<meta property="og:url" content="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/index.html">
+<meta property="og:title" content="第48周开发Tips">
+<meta property="og:url" content="https://pandaape.github.io/2016/11/28/14-48thWeekDevTips/index.html">
 <meta property="og:site_name" content="PandaApe's Blog">
-<meta property="og:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
-<meta property="og:updated_time" content="2017-06-27T00:17:42.000Z">
+<meta property="og:description" content="iOS获取设备信息、运营商名称、网络状态项目需要在HTTP 请求的header里加设备信息、运营名称等，便于前后端联调时定位问题。Gist 地址">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/8c0dc373jw1fa7o00utj2j208709lmy8.jpg">
+<meta property="og:updated_time" content="2016-11-28T05:41:33.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift可选绑定多个可选变量">
-<meta name="twitter:description" content="最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。">
+<meta name="twitter:title" content="第48周开发Tips">
+<meta name="twitter:description" content="iOS获取设备信息、运营商名称、网络状态项目需要在HTTP 请求的header里加设备信息、运营名称等，便于前后端联调时定位问题。Gist 地址">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/8c0dc373jw1fa7o00utj2j208709lmy8.jpg">
 
 
 
@@ -114,9 +116,9 @@
 
 
 
-  <link rel="canonical" href="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/"/>
+  <link rel="canonical" href="https://pandaape.github.io/2016/11/28/14-48thWeekDevTips/"/>
 
-  <title> Swift可选绑定多个可选变量 | PandaApe's Blog </title>
+  <title> 第48周开发Tips | PandaApe's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -255,7 +257,7 @@
             
             
               
-                Swift可选绑定多个可选变量
+                第48周开发Tips
               
             
           </h1>
@@ -267,8 +269,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2015-12-05T22:19:09+08:00" content="2015-12-05">
-              2015-12-05
+            <time itemprop="dateCreated" datetime="2016-11-28T11:29:54+08:00" content="2016-11-28">
+              2016-11-28
             </time>
           </span>
 
@@ -281,8 +283,8 @@
               <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
+                  <a href="/categories/Tips/" itemprop="url" rel="index">
+                    <span itemprop="name">Tips</span>
                   </a>
                 </span>
 
@@ -297,8 +299,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/05/6-OptionalBindingMulti-values/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/" itemprop="commentsCount"></span>
+                <a href="/2016/11/28/14-48thWeekDevTips/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/28/14-48thWeekDevTips/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +310,7 @@
 
           
           
-             <span id="/2015/12/05/6-OptionalBindingMulti-values/" class="leancloud_visitors" data-flag-title="Swift可选绑定多个可选变量">
+             <span id="/2016/11/28/14-48thWeekDevTips/" class="leancloud_visitors" data-flag-title="第48周开发Tips">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -330,11 +332,27 @@
       
 
       
-        <p>最近一个已经开始的项目客户要求用Swift写，已经写好的代码要转成Swift，这个是这次“翻译”工作中的一个小知识，本想一句话放在笔记里的，但想想还是拿出来分享给大家，分享也是一种学习嘛。</p>
+        <h2 id="iOS获取设备信息、运营商名称、网络状态"><a href="#iOS获取设备信息、运营商名称、网络状态" class="headerlink" title="iOS获取设备信息、运营商名称、网络状态"></a>iOS获取设备信息、运营商名称、网络状态</h2><p>项目需要在HTTP 请求的header里加设备信息、运营名称等，便于前后端联调时定位问题。<br><a href="https://gist.github.com/pandaApe/f37eef622bcaea41c7b58b5899bfe08d" target="_blank" rel="external">Gist 地址</a></p>
 <a id="more"></a>
-<p>使用可选绑定（optional binding）来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量.<br>单个可选绑定我们这样用：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>? </span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 如果是多个,就用逗号隔开，第一个之后let可以省略，默认是let<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str1:<span class="type">String</span>?</span><br><span class="line"><span class="keyword">var</span> str2:<span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"-"</span></span><br><span class="line">str2 = <span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> s1 = str1, s2 = str2&#123;</span><br><span class="line">    <span class="built_in">print</span>(s1 + s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意：<em>多个可选绑定之间是“并且”（&amp;&amp;）关系，如果有一个可选变量没有值，则整个条件语句的结果为false.</em></p>
+<h2 id="Git的正确发音"><a href="#Git的正确发音" class="headerlink" title="Git的正确发音"></a>Git的正确发音</h2><p>Git（/ɡɪt/). 听听Git之父 <strong>Linus Torvalds</strong> 到底怎么说的 <a href="https://www.youtube.com/watch?v=4XpnKHJAok8" target="_blank" rel="external">视频传送门</a>。<br>纠正发音最好的方法就是看看官方的怎么说。比如Uber.</p>
+<h2 id="点击不消失的UIAlertView"><a href="#点击不消失的UIAlertView" class="headerlink" title="点击不消失的UIAlertView"></a>点击不消失的UIAlertView</h2><p>两种方法 </p>
+<h3 id="在子类中重写方法："><a href="#在子类中重写方法：" class="headerlink" title="在子类中重写方法："></a>在子类中重写方法：</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyAlertView</span> </span></span><br><span class="line">-(<span class="keyword">void</span>)dismissWithClickedButtonIndex:(<span class="built_in">NSInteger</span>)buttonIndex animated:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">   <span class="keyword">if</span> (buttonIndex should not dismiss the alert)</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">   [<span class="keyword">super</span> dismissWithClickedButtonIndex:buttonIndex animated:animated];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>参考链接<br><a href="http://stackoverflow.com/questions/2051402/is-it-possible-to-not-dismiss-a-uialertview" target="_blank" rel="external">Is it possible to NOT dismiss a UIAlertView</a></p>
+<h3 id="点击消失后AlertView再弹出"><a href="#点击消失后AlertView再弹出" class="headerlink" title="点击消失后AlertView再弹出"></a>点击消失后AlertView再弹出</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    <span class="comment">//Open alert here</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>参考链接<br>[UIAlertView not dismissing]（<a href="http://stackoverflow.com/questions/20620145/uialertview-not-dismissing）" target="_blank" rel="external">http://stackoverflow.com/questions/20620145/uialertview-not-dismissing）</a></p>
+<h2 id="检查iOS系统版本"><a href="#检查iOS系统版本" class="headerlink" title="检查iOS系统版本"></a>检查iOS系统版本</h2><p>Objective-C版<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> *  System Versioning Preprocessor Macros</span><br><span class="line"> */</span> </span><br><span class="line"></span><br><span class="line"><span class="meta">#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)</span></span><br><span class="line"><span class="meta">#define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)</span></span><br><span class="line"><span class="meta">#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)</span></span><br><span class="line"><span class="meta">#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)</span></span><br><span class="line"><span class="meta">#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span><br><span class="line"> *  Usage</span><br><span class="line"> */</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (SYSTEM_VERSION_LESS_THAN(<span class="string">@"4.0"</span>)) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(<span class="string">@"3.1.1"</span>)) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Swift版</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> #available(iOS <span class="number">9</span>, *) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Core-Data-中四个删除规则到底是啥意思？"><a href="#Core-Data-中四个删除规则到底是啥意思？" class="headerlink" title="Core Data 中四个删除规则到底是啥意思？"></a>Core Data 中四个删除规则到底是啥意思？</h2><p>当你删除对象时，你在Xcode内置的数据建模器中为实体的关系设定的删除规则（Delete Rules），如下图所示。指明了关系会受到怎样的影响：<br>➢    如果关系的删除规则设定为Nullify（作废）。当A对象的关系指向的B对象被删除后，A对象的关系将被设为nil。对于To Many关系类型，B对象只会从A对象的关系的容器中被移除。<br>➢    如果关系的删除规则为Cascade（级联），当B对象的关系指向的C对象被删除后，B对象也会被删除。B对象关联（以Cascade删除规则）的二级对象A也会被删除。以此类推。<br>➢    如果关系的删除规则为Deny（拒绝），如果删除A对象时，A对象的关系指向的B对象仍存在，则删除操作会被拒绝。<br>➢    如果关系的删除规则为NO Action，当A对象的关系指向的B对象被删除后，A对象保持不变，这意味着A对象的关系会指向一个不存在的对象。如果没有充分的理由，最好不要使用。</p>
+<p><img src="https://ws2.sinaimg.cn/large/8c0dc373jw1fa7o00utj2j208709lmy8.jpg" alt=""></p>
+<p>参考链接<br><a href="http://stackoverflow.com/questions/7150943/coredata-delete-rule-confusion-xcode" target="_blank" rel="external">Coredata delete rule confusion, xcode</a></p>
+<h2 id="16进制色值转UIColor"><a href="#16进制色值转UIColor" class="headerlink" title="16进制色值转UIColor"></a>16进制色值转UIColor</h2><p>将16进制转10进制，再用RGB字面量初始化为UIColor.<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) &gt;&gt; 16))/255.0 green:((float)((rgbValue &amp; 0xFF00) &gt;&gt; 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#define UIColorFromRGB(rgbValue) \</span></span><br><span class="line">[<span class="built_in">UIColor</span> colorWithRed:((<span class="keyword">float</span>)((rgbValue &amp; <span class="number">0xFF0000</span>) &gt;&gt; <span class="number">16</span>))/<span class="number">255.0</span> \</span><br><span class="line">                green:((<span class="keyword">float</span>)((rgbValue &amp; <span class="number">0x00FF00</span>) &gt;&gt;  <span class="number">8</span>))/<span class="number">255.0</span> \</span><br><span class="line">                 blue:((<span class="keyword">float</span>)((rgbValue &amp; <span class="number">0x0000FF</span>) &gt;&gt;  <span class="number">0</span>))/<span class="number">255.0</span> \</span><br><span class="line">                alpha:<span class="number">1.0</span>]</span><br></pre></td></tr></table></figure></p>
+<p>使用：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">label.textColor = <span class="built_in">UIColorFromRGB</span>(<span class="number">0xBC1128</span>);</span><br></pre></td></tr></table></figure></p>
+<h2 id="自定义TableView的SeparatorLine"><a href="#自定义TableView的SeparatorLine" class="headerlink" title="自定义TableView的SeparatorLine"></a>自定义TableView的SeparatorLine</h2><h3 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h3><p>设置SeparaStyle为None, </p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[TableView setSeparatorStyle:<span class="built_in">UITableViewCellSeparatorStyleNone</span>];</span><br></pre></td></tr></table></figure>
+<p>再添加一个ImageView 作为 Separator</p>
+<h3 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h3><p>使用PatternImage 作为SeparatorColor<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[TableView setSeparatorStyle:<span class="built_in">UITableViewCellSeparatorStyleSingleLine</span>];</span><br><span class="line"></span><br><span class="line"> [TableView setSeparatorColor:[<span class="built_in">UIColor</span> colorWithPatternImage:[<span class="built_in">UIImage</span> imageNamed:<span class="string">@"Divider_line@2x.png"</span>]]];</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://stackoverflow.com/questions/4804632/uitableview-separator-line" target="_blank" rel="external">Custom UITableView Separator line</a></p>
 
       
     </div>
@@ -359,16 +377,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/03/5-IOS8SelfSizingCells/" rel="next" title="iOS8后使用AutoLayot自动计算Cell高度">
-                <i class="fa fa-chevron-left"></i> iOS8后使用AutoLayot自动计算Cell高度
+              <a href="/2016/08/15/18-CA-WhatThingsCanBeKeyPathValue/" rel="next" title="Core Animation(核心动画) 中KeyPath的取值">
+                <i class="fa fa-chevron-left"></i> Core Animation(核心动画) 中KeyPath的取值
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/12/10/7-SwiftTypeCompatibilityObjc/" rel="prev" title="Swift的类型兼容和@Objc修饰符">
-                Swift的类型兼容和@Objc修饰符 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/01/25/17-BezierCurveIniOS1/" rel="prev" title="iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础">
+                iOS世界里的贝塞尔曲线(一)：贝塞尔曲线基础 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -433,8 +451,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/05/6-OptionalBindingMulti-values/"
-           data-title="Swift可选绑定多个可选变量" data-url="https://pandaape.github.io/2015/12/05/6-OptionalBindingMulti-values/">
+      <div class="ds-thread" data-thread-key="2016/11/28/14-48thWeekDevTips/"
+           data-title="第48周开发Tips" data-url="https://pandaape.github.io/2016/11/28/14-48thWeekDevTips/">
       </div>
     
   </div>
@@ -545,7 +563,7 @@
               
             
             
-              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS获取设备信息、运营商名称、网络状态"><span class="nav-number">1.</span> <span class="nav-text">iOS获取设备信息、运营商名称、网络状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git的正确发音"><span class="nav-number">2.</span> <span class="nav-text">Git的正确发音</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#点击不消失的UIAlertView"><span class="nav-number">3.</span> <span class="nav-text">点击不消失的UIAlertView</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在子类中重写方法："><span class="nav-number">3.1.</span> <span class="nav-text">在子类中重写方法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#点击消失后AlertView再弹出"><span class="nav-number">3.2.</span> <span class="nav-text">点击消失后AlertView再弹出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检查iOS系统版本"><span class="nav-number">4.</span> <span class="nav-text">检查iOS系统版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Core-Data-中四个删除规则到底是啥意思？"><span class="nav-number">5.</span> <span class="nav-text">Core Data 中四个删除规则到底是啥意思？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16进制色值转UIColor"><span class="nav-number">6.</span> <span class="nav-text">16进制色值转UIColor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义TableView的SeparatorLine"><span class="nav-number">7.</span> <span class="nav-text">自定义TableView的SeparatorLine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方法1"><span class="nav-number">7.1.</span> <span class="nav-text">方法1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法2"><span class="nav-number">7.2.</span> <span class="nav-text">方法2</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
